@@ -52,3 +52,8 @@ os.system('sudo zypper refresh')
 
 for software in softwares:
 	os.system('sudo zypper in -y %s' % s software)
+
+#configure git
+os.system('git config --global user.email "2319406132@qq.com"')
+os.system("git config --global user.name 'flwwsg'")
+
