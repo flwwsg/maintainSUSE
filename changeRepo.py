@@ -7,7 +7,7 @@ if euid != 0:
 	exit(1)
 
 pattern = 'http://download.opensuse.org'
-replace = 'https://mirrors.tuna.tsinghua.edu.cn'
+replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
 reserve = ['repo-update','repo-update-non-oss']
@@ -45,7 +45,6 @@ for name, url in repos.items():
 
 # zypper refresh
 os.system('sudo zypper refresh')
-# sudo zypper se wubi-pin
-os.system('sudo zypper in -y wubi-pin')
+
+os.system('sudo zypper in -y wubi-pinyin')
 os.system('sudo zypper in -y chromium')
-# suod zypper in -y chromium
