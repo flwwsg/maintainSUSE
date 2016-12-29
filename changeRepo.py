@@ -1,13 +1,18 @@
 #!/usr/bin/python3
 import os, sys
 
+euid = os.geteuid()
+if euid != 0:
+	print('try: sudo python3 changeRepo.py')
+	exit(1)
+
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn'
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
 reserve = ['repo-update','repo-update-non-oss']
-cmd = 'zypper addrepo --check --refresh --name "%s" %s "%s"'
-remove = 'zypper removerepo %s'
+addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
+remove = 'sudo zypper removerepo %s'
 packman = 'https://mirrors.tuna.tsinghua.edu.cn/packman/suse/%s/'
 
 #packman
@@ -36,4 +41,11 @@ for line in outs[2:]:
 		repos[tname] = turl	
 
 for name, url in repos.items():
-	os.system(cmd % (name, url, name))
+	os.system(addrepo % (name, url, name))
+
+# zypper refresh
+os.system('sudo zypper refresh')
+# sudo zypper se wubi-pin
+os.system('sudo zypper in -y wubi-pin')
+os.system('sudo zypper in -y chromium')
+# suod zypper in -y chromium
