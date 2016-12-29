@@ -8,6 +8,7 @@ if euid != 0:
 
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
+softwares = ['git', 'fcitx-table-cn-wubi-pinyin', 'chromium']
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
 reserve = ['repo-update','repo-update-non-oss']
@@ -43,8 +44,11 @@ for line in outs[2:]:
 for name, url in repos.items():
 	os.system(addrepo % (name, url, name))
 
+#copy hosts
+os.system('sudo cp ./hosts /etc/')
+os.system('sudo systemctl restart NetworkManager')
 # zypper refresh
 os.system('sudo zypper refresh')
 
-os.system('sudo zypper in -y wubi-pinyin')
-os.system('sudo zypper in -y chromium')
+for software in softwares:
+	os.system('sudo zypper in -y %s' % s software)
