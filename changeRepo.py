@@ -32,11 +32,10 @@ for line in outs[2:]:
 	alias = tmp[1].strip()
 	url = tmp[8]
 	os.system(remove % alias)
-	if alias in ignore:
+	if alias in ignore or not alias:
 		continue
-	else:
-		if alias in reserve:
-			repos[alias] = url
+	elif alias in reserve::
+		repos[alias] = url
 		turl = url.replace(pattern, replace)
 		tname = alias if alias.startswith('tuna-') else 'tuna-'+alias
 		repos[tname] = turl	
