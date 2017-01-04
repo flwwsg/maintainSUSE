@@ -8,7 +8,7 @@ if euid != 0:
 
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-softwares = ['git', 'fcitx-table-cn-wubi-pinyin', 'chromium', 'ctags','python3-tk']
+softwares = ['gcc','atuo-make','git', 'fcitx-table-cn-wubi-pinyin', 'chromium', 'ctags' ,'python3-tk']
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
 reserve = ['repo-update','repo-update-non-oss']
@@ -32,11 +32,10 @@ for line in outs[2:]:
 	alias = tmp[1].strip()
 	url = tmp[8]
 	os.system(remove % alias)
-	if alias in ignore:
+	if alias in ignore or not alias:
 		continue
-	else:
-		if alias in reserve:
-			repos[alias] = url
+	elif alias in reserve::
+		repos[alias] = url
 		turl = url.replace(pattern, replace)
 		tname = alias if alias.startswith('tuna-') else 'tuna-'+alias
 		repos[tname] = turl	
@@ -45,7 +44,7 @@ for name, url in repos.items():
 	os.system(addrepo % (name, url, name))
 
 #copy hosts
-os.system('sudo cp ./hosts /etc/')
+os.system('sudo cat ./hosts >> /etc/hosts')
 os.system('sudo systemctl restart NetworkManager')
 # zypper refresh
 os.system('sudo zypper refresh')
