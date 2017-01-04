@@ -8,7 +8,7 @@ if euid != 0:
 
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-softwares = ['git', 'fcitx-table-cn-wubi-pinyin', 'chromium']
+softwares = ['git', 'fcitx-table-cn-wubi-pinyin', 'chromium', 'ctags','python3-tk']
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
 reserve = ['repo-update','repo-update-non-oss']
