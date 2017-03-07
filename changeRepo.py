@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os, sys
+import time
 
 euid = os.geteuid()
 if euid != 0:
@@ -8,10 +9,11 @@ if euid != 0:
 
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-softwares = ['gcc','atuo-make','git', 'fcitx-table-cn-wubi-pinyin', 'chromium', 'ctags' ,'python3-tk']
+softwares = ['chromium','gcc48', 'gcc48-c++','git', 'fcitx-table-cn-wubi-pinyin','ctags' ,'python3-tk','python3-wcwidth','python3-curses' ,'python3-bpython']
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
-reserve = ['repo-update','repo-update-non-oss']
+# reserve = ['repo-update','repo-update-non-oss']
+reserve = list()
 addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
 remove = 'sudo zypper removerepo %s'
 packman = 'https://mirrors.tuna.tsinghua.edu.cn/packman/suse/%s/'
@@ -34,8 +36,9 @@ for line in outs[2:]:
 	os.system(remove % alias)
 	if alias in ignore or not alias:
 		continue
-	elif alias in reserve::
-		repos[alias] = url
+	else:
+		if alias in reserve:
+			repos[alias] = url
 		turl = url.replace(pattern, replace)
 		tname = alias if alias.startswith('tuna-') else 'tuna-'+alias
 		repos[tname] = turl	
@@ -45,12 +48,13 @@ for name, url in repos.items():
 
 #copy hosts
 os.system('sudo cat ./hosts >> /etc/hosts')
-os.system('sudo systemctl restart NetworkManager')
 # zypper refresh
+os.system('sudo systemctl restart NetworkManager')
+time.sleep(10)
 os.system('sudo zypper refresh')
 
 for software in softwares:
-	os.system('sudo zypper in -y %s' % s software)
+	os.system('sudo zypper in -y %s' % software)
 
 #configure git
 os.system('git config --global user.email "2319406132@qq.com"')
