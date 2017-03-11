@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+"""
+Changing Repository from dowload.opensuse.org to mirrors.tuna.tsinghua.edu.cn/opensuse and 
+install popular software.
+Running only once on first running after system installed
+"""
 import os, sys
 import time
 
@@ -9,7 +14,7 @@ if euid != 0:
 
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-softwares = ['chromium','gcc48', 'gcc48-c++','git', 'fcitx-table-cn-wubi-pinyin','ctags' ,'python3-tk','python3-wcwidth','python3-curses' ,'python3-bpython']
+softwares = ['chromium','gcc48', 'gcc48-c++','git', 'fcitx-table-cn-wubi-pinyin','ctags' ,'python3-tk','python3-wcwidth', 'python3-virtualenv' ,'python3-curses' ,'python3-bpython']
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
 # reserve = ['repo-update','repo-update-non-oss']
@@ -60,3 +65,5 @@ for software in softwares:
 os.system('git config --global user.email "2319406132@qq.com"')
 os.system("git config --global user.name 'flwwsg'")
 
+# sudo usermod -a -G groupName userName
+# sudo usermod -a -G vboxusers lblue
