@@ -12,7 +12,7 @@ HOME = '/home/%s' % USER
 def changeMod(mod=775, directories=None):
 	chmod = 'sudo chmod -R %s %s'
 	if not directories:
-		directories = ['dev', 'django18', 'bin', 'VirtualBox VMs']
+		directories = ['dev', 'django18', 'bin', 'VirtualBox VMs','Documents', 'Downloads']
 	for folder in directories:
 		path = os.path.join(HOME, folder)
 		if os.path.exists(path):

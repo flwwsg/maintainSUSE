@@ -6,6 +6,7 @@ Running only once on first running after system installed
 """
 import os, sys
 import time
+from urllib.request import urlopen
 
 euid = os.geteuid()
 if euid != 0:
@@ -14,7 +15,9 @@ if euid != 0:
 
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-softwares = ['chromium','gcc48', 'gcc48-c++','git', 'fcitx-table-cn-wubi-pinyin','ctags' ,'python3-tk','python3-wcwidth', 'python3-virtualenv' ,'python3-curses' ,'python3-bpython']
+softwares = ['chromium','gcc5', 'gcc5-c++','git', 'fcitx-table-cn-wubi-pinyin','ctags' ,
+			'python3-tk','python3-wcwidth', 'python3-virtualenv' ,'python3-curses' ,
+			'python3-bpython','imagewriter']
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
 # reserve = ['repo-update','repo-update-non-oss']
@@ -23,6 +26,15 @@ addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
 remove = 'sudo zypper removerepo %s'
 packman = 'https://mirrors.tuna.tsinghua.edu.cn/packman/suse/%s/'
 
+hfile = 'hosts'
+
+html = urlopen('https://raw.githubusercontent.com/flwwsg/hosts/master/hosts')
+with open(hfile,'wb') as f:
+	f.write(html.read()) 
+#copy hosts
+os.system('sudo cat ./hosts >> /etc/hosts')
+os.system('sudo systemctl restart NetworkManager')
+time.sleep(10)
 #packman
 versions = os.popen('cat /etc/os-release').readlines()
 for line in versions:
@@ -51,11 +63,7 @@ for line in outs[2:]:
 for name, url in repos.items():
 	os.system(addrepo % (name, url, name))
 
-#copy hosts
-os.system('sudo cat ./hosts >> /etc/hosts')
 # zypper refresh
-os.system('sudo systemctl restart NetworkManager')
-time.sleep(10)
 os.system('sudo zypper refresh')
 
 for software in softwares:
@@ -65,5 +73,5 @@ for software in softwares:
 os.system('git config --global user.email "2319406132@qq.com"')
 os.system("git config --global user.name 'flwwsg'")
 
-# sudo usermod -a -G groupName userName
-# sudo usermod -a -G vboxusers lblue
+# sudo usermod -aG groupName userName
+# sudo usermod -aG vboxusers lblue
