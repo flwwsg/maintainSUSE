@@ -15,11 +15,14 @@ if euid != 0:
 
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-softwares = ['chromium','gcc5', 'gcc5-c++','git', 'fcitx-table-cn-wubi-pinyin','ctags' ,
-			'python3-tk','python3-wcwidth', 'python3-virtualenv' ,'python3-curses' ,
-			'python3-bpython','imagewriter']
+softwares = ['chromium','gcc5', 'gcc5-c++','git', 'fcitx-table-cn-wubi-pinyin','ctags' , 'virtualbox', 
+			'python3-tk','python3-virtualenv' , 'docker', 'python3-devel',
+			'imagewriter',]
+			 # 'sudo zypper install -t pattern devel_basis' build essential
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
+groups = ['docker', 'vboxusers']
+
 # reserve = ['repo-update','repo-update-non-oss']
 reserve = list()
 addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
@@ -73,5 +76,12 @@ for software in softwares:
 os.system('git config --global user.email "2319406132@qq.com"')
 os.system("git config --global user.name 'flwwsg'")
 
+# add groups 
+for group in groups:
+	os.system('sudo usermod -aG %s lblue' % group)
+	os.system('sudo usermod -aG %s dev' % group)
 # sudo usermod -aG groupName userName
 # sudo usermod -aG vboxusers lblue
+
+def gen_bashrc():
+	alias = {'grep':'grep -E --color=auto', 'pip':'pip -i https://pypi.tuna.tsinghua.edu.cn/simple/'}
