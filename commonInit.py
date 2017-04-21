@@ -8,7 +8,7 @@ USER = os.getlogin()
 HOME = '/home/%s' % USER
 
 # folder listed in dirfilters will be unchanged
-dirfilters = {'dev':['lims']}
+dirfilters = {'dev':['lims'], 'Downloads':['dev']}
 
 #Changing file mod to 775 for sharing .
 #replace space (' ') in path to ('\ ') avoid misstake in bash
@@ -27,10 +27,11 @@ def changeMod(mod=775, directories=None):
 			remain = list(remain)
 			# print(remain)
 			for ipath in remain:
-				path = os.path.join(path, ipath)
-				if not os.path.exists(path):
+				newpath = os.path.join(path, ipath)
+				# print(newpath)
+				if not os.path.exists(newpath):
 					continue
-				path = path.replace(' ','\ ')
+				newpath = newpath.replace(' ','\ ')
 				cmd = chmod % (mod, path)
 				os.system(cmd)
 				# print(cmd)
