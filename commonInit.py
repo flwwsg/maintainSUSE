@@ -31,15 +31,22 @@ def changeMod(mod=775, directories=None):
 				# print(newpath)
 				if not os.path.exists(newpath):
 					continue
-				newpath = newpath.replace(' ','\ ')
+				newpath = escapath(newpath)
 				cmd = chmod % (mod, newpath)
 				os.system(cmd)
 				# print(cmd)
 		else:	
-			path = path.replace(' ','\ ')
+			path = escapath(path)
 			cmd = chmod % (mod, path)
 			os.system(cmd)
 			# print(cmd)
+
+def escapath(path):
+	toescap = ['(',')',"'",'"', ' ']
+	for ch in toescap:
+		if ch in path:
+			path = path.replace(ch,'\\'+ch)
+	return path
 
 if __name__ == '__main__':
 	changeMod()
