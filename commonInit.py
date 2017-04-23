@@ -32,7 +32,7 @@ def changeMod(mod=775, directories=None):
 				if not os.path.exists(newpath):
 					continue
 				newpath = newpath.replace(' ','\ ')
-				cmd = chmod % (mod, path)
+				cmd = chmod % (mod, newpath)
 				os.system(cmd)
 				# print(cmd)
 		else:	
