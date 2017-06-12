@@ -31,7 +31,7 @@ packman = 'https://mirrors.tuna.tsinghua.edu.cn/packman/suse/%s/'
 
 hfile = 'hosts'
 
-html = urlopen('https://raw.githubusercontent.com/flwwsg/hosts/master/hosts')
+html = urlopen('https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts')
 with open(hfile,'wb') as f:
 	f.write(html.read()) 
 #copy hosts
