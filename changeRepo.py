@@ -7,6 +7,7 @@ Running only once on first running after system installed
 import os, sys
 import time
 from urllib.request import urlopen
+import grp
 
 euid = os.geteuid()
 if euid != 0:
@@ -15,10 +16,10 @@ if euid != 0:
 
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-softwares = ['chromium','gcc5', 'gcc5-c++','git', 'fcitx-table-cn-wubi-pinyin','ctags' , 'virtualbox', 
-			'python3-tk','python3-virtualenv' , 'docker', 'python3-devel', ' -t pattern devel_basis',
-			'imagewriter',]
-			 # 'sudo zypper install -t pattern devel_basis'  build essential
+softwares = ['chromium', 'gcc5', 'gcc5-c++', 'git', 'fcitx-table-cn-wubi-pinyin', 'ctags',
+	'virtualbox', 'python3-tk', 'python3-virtualenv', 'docker', 'python3-devel',
+	' -t pattern devel_basis', 'imagewriter',]
+# 'sudo zypper install -t pattern devel_basis'  build essential
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
 groups = ['docker', 'vboxusers']
@@ -77,13 +78,21 @@ os.system('git config --global user.email "2319406132@qq.com"')
 os.system("git config --global user.name 'flwwsg'")
 
 # add groups 
+for group in grp.getgrall():
+	if group != 'users':
+		continue
+	users = group[3]
+	break
+
 for group in groups:
-	os.system('sudo usermod -aG %s lblue' % group)
-	os.system('sudo usermod -aG %s dev' % group)
+	for user in users:
+		os.system('sudo usermod -aG %s %s' % group, user)
+		
 # sudo usermod -aG groupName userName
 # sudo usermod -aG vboxusers lblue
 
 def gen_bashrc():
-	alias = {'grep':'grep -E --color=auto', 
+    alias = {'grep':'grep -E --color=auto', 
 		# 'pip':'pip -i https://pypi.tuna.tsinghua.edu.cn/simple/'
 		}
+# https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo sublime repo
