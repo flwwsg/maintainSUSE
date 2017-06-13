@@ -8,6 +8,7 @@ import os, sys
 import time
 from urllib.request import urlopen
 import grp
+import getpass
 
 euid = os.geteuid()
 if euid != 0:
@@ -16,8 +17,8 @@ if euid != 0:
 
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-softwares = ['chromium', 'gcc5', 'gcc5-c++', 'git', 'fcitx-table-cn-wubi-pinyin', 'ctags',
-	'virtualbox', 'python3-tk', 'python3-virtualenv', 'docker', 'python3-devel',
+softwares = ['chromium', 'git', 'fcitx-table-cn-wubi-pinyin', 'ctags',
+	'virtualbox', 'python3-tk', 'python3-virtualenv', 'docker', 'python3-devel', 'python3-curses',
 	' -t pattern devel_basis', 'imagewriter',]
 # 'sudo zypper install -t pattern devel_basis'  build essential
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
@@ -77,19 +78,20 @@ for software in softwares:
 os.system('git config --global user.email "2319406132@qq.com"')
 os.system("git config --global user.name 'flwwsg'")
 
-# add groups 
-for group in grp.getgrall():
-	if group != 'users':
-		continue
-	users = group[3]
-	break
+#pip pakage
+pkgs = ['bpython']
 
+for pkg in pkgs:
+    os.system('sudo pip -i https://pypi.tuna.tsinghua.edu.cn/simple/ install %s'%pkg)
+
+# add groups 
+uname = getpass.getuser()
 for group in groups:
-	for user in users:
-		os.system('sudo usermod -aG %s %s' % group, user)
+    os.system('sudo usermod -aG %s %s' % group, uname)
 		
 # sudo usermod -aG groupName userName
 # sudo usermod -aG vboxusers lblue
+
 
 def gen_bashrc():
     alias = {'grep':'grep -E --color=auto', 
