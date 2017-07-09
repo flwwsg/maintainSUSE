@@ -1,0 +1,27 @@
+[opensuse]
+# repositories: https://mirrors.tuna.tsinghua.edu.cn/opensuse
+installer: zypper 
+repos: repo-oss repo-non-oss repo-update-oss repo-update-non-oss
+version: 42.2
+addrepos: 
+	https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Leap_42.2/ tuna-packman,
+	http://download.opensuse.org/repositories/devel:/languages:/python3/openSUSE_Leap_42.2/ dev-py3,
+	
+#reserved: repo-update
+#
+
+[repourl]
+tuna: https://mirrors.tuna.tsinghua.edu.cn/
+ustc: https://mirrors.ustc.edu.cn/
+
+[tumbleweed]
+#installer: zypper
+repos: repo-oss repo-non-oss 
+reserved: repo-update
+
+# sudo zypper ar -fc https://mirrors.ustc.edu.cn/opensuse/distribution/leap/42.2/repo/oss USTC:42.2:OSS
+# sudo zypper ar -fc https://mirrors.ustc.edu.cn/opensuse/distribution/leap/42.2/repo/non-oss USTC:42.2:NON-OSS
+# sudo zypper ar -fc https://mirrors.ustc.edu.cn/opensuse/update/leap/42.2/oss USTC:42.2:UPDATE-OSS
+# sudo zypper ar -fc https://mirrors.ustc.edu.cn/opensuse/update/leap/42.2/non-oss USTC:42.2:UPDATE-NON-OSS
+
+[config-softwares]
