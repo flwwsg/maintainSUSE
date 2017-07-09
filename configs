@@ -1,7 +1,7 @@
 [opensuse]
 # repositories: https://mirrors.tuna.tsinghua.edu.cn/opensuse
 installer: zypper 
-repos: repo-oss repo-non-oss repo-update-oss repo-update-non-oss
+repos: repo-oss repo-non-oss repo-update-oss repo-update-non-oss repo-update
 version: 42.2
 addrepos: 
 	https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Leap_42.2/ tuna-packman,
