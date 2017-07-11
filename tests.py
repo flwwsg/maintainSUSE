@@ -19,69 +19,74 @@ import unittest
 from unittest import mock
 
 
-_supported = ['supported system', 'change repositories', 
-	'install pop software', 'install basic software', 'adding imporved bashrc', 'install pip module']
+_supported = ['supported system', 'change repositories',
+              'install pop software', 'install basic software', 'adding imporved bashrc', 'install pip module']
+
 
 class BaseChangeRepoTest(unittest.TestCase):
-	"""basic tests set for changeRepo.py"""
-	pass
+    """basic tests set for changeRepo.py"""
+    pass
+
 
 class TestChangeRepo(BaseChangeRepoTest):
-	def test_supported_system(self):
-		self.assertIn('opensuse', cr.SUPPORTEDOS)
-			
-	def test_change_repo(self):
-		reposurl = []
-		plantform = 'tumbleweed'
-		# mirror = 'https://mirrors.tuna.tsinghua.edu.cn/'+plantform
-		mirror = 'https://mirrors.ustc.edu.cn/'+plantform
-		with mock.patch('os.system', lambda x: reposurl.append(x)):
-			cr.changerepo(plantform=plantform, mirrorname='ustc')
-		self.assertTrue(reposurl)
-		self.assertTrue(all([mirror in url for url in reposurl if url.startswith('sudo zypper addrepo')]))
+    def test_supported_system(self):
+        self.assertIn('opensuse', cr.SUPPORTEDOS)
 
-	# @unittest.skip
-	def test_install_software(self):
-		infos = []
-		softs = ['git', 'fcitx-table-cn-wubi-pinyin','ctags', 'imagewriter']
-		with mock.patch('os.system', lambda x: infos.append(x)):
-			cr.install_software(plantform='opensuse', softs=softs)
+    def test_change_repo(self):
+        reposurl = []
+        plantform = 'tumbleweed'
+        # mirror = 'https://mirrors.tuna.tsinghua.edu.cn/'+plantform
+        mirror = 'https://mirrors.ustc.edu.cn/' + plantform
+        with mock.patch('os.system', lambda x: reposurl.append(x)):
+            cr.changerepo(plantform=plantform, mirrorname='ustc')
+        self.assertTrue(reposurl)
+        self.assertTrue(
+            all([mirror in url for url in reposurl if url.startswith('sudo zypper addrepo')]))
 
-		patts = ['sudo zypper in -y %s' % soft for soft in softs]
-		self.assertTrue(infos)
-		self.assertEqual(infos, patts)
+    # @unittest.skip
+    def test_install_software(self):
+        infos = []
+        softs = ['git', 'fcitx-table-cn-wubi-pinyin', 'ctags', 'imagewriter']
+        with mock.patch('os.system', lambda x: infos.append(x)):
+            cr.install_software(plantform='opensuse', softs=softs)
 
-	# @unittest.skip
-	def test_install_pip_module(self):
-		# softs = ['bpython']
-		patts = ['sudo pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/', 
-			'sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ selenium']
-		infos = []
-		with mock.patch('os.system', lambda x: infos.append(x)):
-			cr.install_pip_module(file='requirements.txt', softs=['selenium'])
-		self.assertTrue(infos)
-		self.assertEqual(infos, patts)
+        patts = ['sudo zypper in -y %s' % soft for soft in softs]
+        self.assertTrue(infos)
+        self.assertEqual(infos, patts)
 
-	# @unittest.skip
-	def test_improved_bash(self):
-		infos = []
-		alias = {'test':'newtest'}
-		patts = ['echo "alias test=\'newtest\'" >> ~/.bashrc', 'echo export PATH=~/bin:$PATH >> ~/.bashrc']
-		with mock.patch('os.system', lambda x: infos.append(x)):
-			cr.improved_bash(alias=alias, cmds=['export PATH=~/bin:$PATH'], filename='')
-		
-		self.assertTrue(infos)
-		self.assertEqual(infos, patts)
+    # @unittest.skip
+    def test_install_pip_module(self):
+        # softs = ['bpython']
+        patts = ['sudo pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/',
+                 'sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ selenium']
+        infos = []
+        with mock.patch('os.system', lambda x: infos.append(x)):
+            cr.install_pip_module(file='requirements.txt', softs=['selenium'])
+        self.assertTrue(infos)
+        self.assertEqual(infos, patts)
 
-	def test_add_repos(self):
-		self.fail('to be implemented')
+    # @unittest.skip
+    def test_improved_bash(self):
+        infos = []
+        alias = {'test': 'newtest'}
+        patts = ['echo "alias test=\'newtest\'" >> ~/.bashrc',
+                 'echo export PATH=~/bin:$PATH >> ~/.bashrc']
+        with mock.patch('os.system', lambda x: infos.append(x)):
+            cr.improved_bash(alias=alias, echos=[
+                             'export PATH=~/bin:$PATH'], filename='')
+
+        self.assertTrue(infos)
+        self.assertEqual(infos, patts)
+
+    def test_add_repos(self):
+        self.fail('to be implemented')
 
 
 if __name__ == '__main__':
-	print('starting test....')
-	# help text
+    print('starting test....')
+    # help text
 # 	print('enter you want to test:')
-	
+
 # 	maxlen = 0
 # 	for l in _supported:
 # 		if maxlen < len(l):

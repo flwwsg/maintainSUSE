@@ -4,70 +4,99 @@ Changing Repository from dowload.opensuse.org to mirrors.tuna.tsinghua.edu.cn/op
 install popular software.
 Running only once on first running after system installed
 """
-import os, sys
+import os
+import sys
 import time
 import configparser
 
 # from urllib.request import urlopen
 
 # OSINFO = {'id':'plantform', 'pretty_name':'version'}
-SUPPORTEDOS = ['opensuse','tumbleweed']
+SUPPORTEDOS = ['opensuse', 'tumbleweed']
+
 
 def get_config(file='configs'):
-	config = configparser.ConfigParser()
-	config.read_file(open(file))
-	return config
+    config = configparser.ConfigParser()
+    config.read_file(open(file))
+    return config
+
 
 config = get_config()
 
-def changerepo(plantform='opensuse',mirrorname='tuna'):
-	"""change software repository to mirror site in china"""
-	mirrorurl = config['repourl'][mirrorname]+plantform
-	repos = config[plantform]['repos'].split()
-	reserved = config[plantform].get('reserved','').split()
-	default_url = 'http://download.opensuse.org'
-	addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
-	removerepo = 'sudo zypper removerepo %s'
 
-	outs = os.popen('zypper repos -d').readlines()
-	newrepos = {}
-	for line in outs:
-		tmp = line.split('|')
-		if len(tmp) <8 or tmp[1].strip() == 'Alias':
-			continue
+def changerepo(plantform='opensuse', mirrorname='tuna'):
+    """change software repository to mirror site in china"""
+    mirrorurl = config['repourl'][mirrorname] + plantform
+    repos = config[plantform]['repos'].split()
+    reserved = config[plantform].get('reserved', '').split()
+    default_url = 'http://download.opensuse.org'
+    addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
+    removerepo = 'sudo zypper removerepo %s'
 
-		alias = tmp[1].strip()
-		if alias not in reserved:
-			os.system(removerepo % alias)
-		if alias not in repos:
-			continue
-		url = tmp[8]
-		turl = url.replace(default_url, mirrorurl)
-		tname = alias if alias.startswith(mirrorname+'-') else mirrorname+'-'+alias
-		newrepos[tname] = turl	
+    outs = os.popen('zypper repos -d').readlines()
+    newrepos = {}
+    for line in outs:
+        tmp = line.split('|')
+        if len(tmp) < 8 or tmp[1].strip() == 'Alias':
+            continue
 
-	for name, url in newrepos.items():
-		os.system(addrepo % (name, url, name))
+        alias = tmp[1].strip()
+        if alias not in reserved:
+            os.system(removerepo % alias)
+        if alias not in repos:
+            continue
+        url = tmp[8]
+        turl = url.replace(default_url, mirrorurl)
+        tname = alias if alias.startswith(
+            mirrorname + '-') else mirrorname + '-' + alias
+        newrepos[tname] = turl
+
+    for name, url in newrepos.items():
+        os.system(addrepo % (name, url, name))
+
 
 def install_software(plantform='opensuse', softs=[]):
-	for soft in softs:
-		os.system('sudo zypper in -y %s' % soft)
+    for soft in softs:
+        os.system('sudo zypper in -y %s' % soft)
 
 
 def install_pip_module(file='', softs=[]):
-	if file:
-		os.system('sudo pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/')
-	if softs:
-		for soft in softs:
-			os.system('sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ %s' % soft)
+    if not file:
+        os.system(
+            'sudo pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/')
+    else:
+        os.system(
+            'sudo pip install -r %s -i https://pypi.tuna.tsinghua.edu.cn/simple/' % file)
 
-def improved_bash(alias={}, cmds=[], filename=''):
-	if not filename:
-		filename = '~/.bashrc'
-	for cmd, alia in alias.items():
-		os.system('echo "alias %s=\'%s\'" >> %s' % (cmd, alia, filename))
-	for cmd in cmds:
-		os.system('echo %s >> %s' % (cmd, filename))
+    if softs:
+        for soft in softs:
+            os.system(
+                'sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ %s' % soft)
+    else:
+        pass
+
+
+def improved_bash(alias={}, echos=[], cmds=[], filename=''):
+    if not filename:
+        filename = '~/.bashrc'
+        
+    for cmd, alia in alias.items():
+        os.system('echo "alias %s=\'%s\'" >> %s' % (cmd, alia, filename))
+
+    for cmd in echos:
+        os.system('echo %s >> %s' % (cmd, filename))
+
+    for cmd in cmds:
+        os.system(cmd)
+
+
+def add_repos(repos):
+    for repo in repos:
+        os.system('sudo zypper ar -fc %s' % repo)
+    repos = config['cusrepos']
+
+    for repo in repos:
+        os.system(repo)
 
 # class ChangeRepo(object):
 # 	"""change repository to chinese mirror"""
@@ -101,7 +130,7 @@ def improved_bash(alias={}, cmds=[], filename=''):
 
 # pattern = 'http://download.opensuse.org'
 # replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-# softwares = ['git', 'fcitx-table-cn-wubi-pinyin','ctags' , 'virtualbox', 
+# softwares = ['git', 'fcitx-table-cn-wubi-pinyin','ctags' , 'virtualbox',
 # 			'python3-tk','python3-virtualenv' , 'docker', 'python3-devel', ' -t pattern devel_basis',
 # 			'imagewriter',]
 # 			 # 'sudo zypper install -t pattern devel_basis'  build essential
@@ -119,7 +148,7 @@ def improved_bash(alias={}, cmds=[], filename=''):
 
 # html = urlopen('https://raw.githubusercontent.com/flwwsg/hosts/master/hosts')
 # with open(hfile,'wb') as f:
-# 	f.write(html.read()) 
+# 	f.write(html.read())
 # #copy hosts
 # os.system('sudo cat ./hosts >> /etc/hosts')
 # os.system('sudo systemctl restart NetworkManager')
@@ -147,7 +176,7 @@ def improved_bash(alias={}, cmds=[], filename=''):
 # 			repos[alias] = url
 # 		turl = url.replace(pattern, replace)
 # 		tname = alias if alias.startswith('tuna-') else 'tuna-'+alias
-# 		repos[tname] = turl	
+# 		repos[tname] = turl
 
 # for name, url in repos.items():
 # 	os.system(addrepo % (name, url, name))
@@ -162,7 +191,7 @@ def improved_bash(alias={}, cmds=[], filename=''):
 # os.system('git config --global user.email "2319406132@qq.com"')
 # os.system("git config --global user.name 'flwwsg'")
 
-# # add groups 
+# # add groups
 # for group in groups:
 # 	os.system('sudo usermod -aG %s lblue' % group)
 # 	os.system('sudo usermod -aG %s dev' % group)
@@ -170,7 +199,7 @@ def improved_bash(alias={}, cmds=[], filename=''):
 # # sudo usermod -aG vboxusers lblue
 
 # def gen_bashrc():
-# 	alias = {'grep':'grep -E --color=auto', 
+# 	alias = {'grep':'grep -E --color=auto',
 # 		# 'pip':'pip -i https://pypi.tuna.tsinghua.edu.cn/simple/'
 # 		}
 # # =======
@@ -203,7 +232,7 @@ def improved_bash(alias={}, cmds=[], filename=''):
 
 # html = urlopen('https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts')
 # with open(hfile,'wb') as f:
-# 	f.write(html.read()) 
+# 	f.write(html.read())
 # #copy hosts
 # os.system('sudo cat ./hosts >> /etc/hosts')
 # os.system('sudo systemctl restart NetworkManager')
@@ -231,7 +260,7 @@ def improved_bash(alias={}, cmds=[], filename=''):
 # 			repos[alias] = url
 # 		turl = url.replace(pattern, replace)
 # 		tname = alias if alias.startswith('tuna-') else 'tuna-'+alias
-# 		repos[tname] = turl	
+# 		repos[tname] = turl
 
 # for name, url in repos.items():
 # 	os.system(addrepo % (name, url, name))
@@ -252,17 +281,18 @@ def improved_bash(alias={}, cmds=[], filename=''):
 # for pkg in pkgs:
 #     os.system('sudo pip -i https://pypi.tuna.tsinghua.edu.cn/simple/ install %s'%pkg)
 
-# # add groups 
+# # add groups
 # uname = getpass.getuser()
 # for group in groups:
 #     os.system('sudo usermod -aG %s %s' % group, uname)
-		
+# >>>>>>> ea81b6f82fce8992cf94726737a40bee764127ce
+
 # # sudo usermod -aG groupName userName
 # # sudo usermod -aG vboxusers lblue
 
 
 # def gen_bashrc():
-#     alias = {'grep':'grep -E --color=auto', 
+#     alias = {'grep':'grep -E --color=auto',
 # 		# 'pip':'pip -i https://pypi.tuna.tsinghua.edu.cn/simple/'
 # 		}
 # # https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo sublime repo
