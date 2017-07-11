@@ -6,9 +6,6 @@ version: 42.2
 addrepos: 
 	https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Leap_42.2/ tuna-packman,
 	http://download.opensuse.org/repositories/devel:/languages:/python3/openSUSE_Leap_42.2/ dev-py3,
-	
-#reserved: repo-update
-#
 
 [repourl]
 tuna: https://mirrors.tuna.tsinghua.edu.cn/
@@ -24,4 +21,13 @@ reserved: repo-update
 # sudo zypper ar -fc https://mirrors.ustc.edu.cn/opensuse/update/leap/42.2/oss USTC:42.2:UPDATE-OSS
 # sudo zypper ar -fc https://mirrors.ustc.edu.cn/opensuse/update/leap/42.2/non-oss USTC:42.2:UPDATE-NON-OSS
 
-[config-softwares]
+[cusrepos]:
+	sudo rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg,
+	sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc,
+	sudo zypper addrepo -g -f https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo,
+	sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ntype=rpm-md\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/zypp/repos.d/vscode.repo',
+
+[popsofts]
+suse_softs:chromium, git, fcitx-table-cn-wubi-pinyin, ctags, virtualbox, python3-tk, python3-virtualenv, docker ,python3-devel , python3-curses, 
+	htop,redshift,  imagewriter, code, sublime-text,
+basic_suse_softs:-t pattern devel_basis,
