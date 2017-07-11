@@ -14,10 +14,12 @@ import configparser
 # OSINFO = {'id':'plantform', 'pretty_name':'version'}
 SUPPORTEDOS = ['opensuse', 'tumbleweed']
 
+
 def get_config(file='configs'):
     config = configparser.ConfigParser()
     config.read_file(open(file))
     return config
+
 
 config = get_config()
 
@@ -59,22 +61,42 @@ def install_software(plantform='opensuse', softs=[]):
 
 
 def install_pip_module(file='', softs=[]):
-    if file:
+    if not file:
         os.system(
             'sudo pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/')
+    else:
+        os.system(
+            'sudo pip install -r %s -i https://pypi.tuna.tsinghua.edu.cn/simple/' % file)
+
     if softs:
         for soft in softs:
             os.system(
                 'sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ %s' % soft)
+    else:
+        pass
 
 
-def improved_bash(alias={}, cmds=[], filename=''):
+def improved_bash(alias={}, echos=[], cmds=[], filename=''):
     if not filename:
         filename = '~/.bashrc'
+        
     for cmd, alia in alias.items():
         os.system('echo "alias %s=\'%s\'" >> %s' % (cmd, alia, filename))
-    for cmd in cmds:
+
+    for cmd in echos:
         os.system('echo %s >> %s' % (cmd, filename))
+
+    for cmd in cmds:
+        os.system(cmd)
+
+
+def add_repos(repos):
+    for repo in repos:
+        os.system('sudo zypper ar -fc %s' % repo)
+    repos = config['cusrepos']
+
+    for repo in repos:
+        os.system(repo)
 
 # class ChangeRepo(object):
 # 	"""change repository to chinese mirror"""

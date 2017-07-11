@@ -1,3 +1,7 @@
+[common]
+pipindex: https://pypi.tuna.tsinghua.edu.cn/simple/
+
+
 [opensuse]
 # repositories: https://mirrors.tuna.tsinghua.edu.cn/opensuse
 installer: zypper 
@@ -29,5 +33,16 @@ reserved: repo-update
 
 [popsofts]
 suse_softs:chromium, git, fcitx-table-cn-wubi-pinyin, ctags, virtualbox, python3-tk, python3-virtualenv, docker ,python3-devel , python3-curses, 
-	htop,redshift,  imagewriter, code, sublime-text,
+	htop,redshift,  imagewriter
 basic_suse_softs:-t pattern devel_basis,
+#pip_soft: pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ --user virtualenvwrapper,
+
+[bashrc]
+alias: grep='grep -E --color=auto', sudo='sudo ', pipinstall='pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ ',
+
+echo: 'PATH=~/.local/bin:$PATH' >> ~/.bashrc, "source virtualenvwrapper.sh" >> ~/.bashrc,
+
+#cmd: 
+
+
+
