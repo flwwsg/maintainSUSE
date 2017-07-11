@@ -18,7 +18,7 @@ if euid != 0:
 pattern = 'http://download.opensuse.org'
 replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
 softwares = ['chromium', 'git', 'fcitx-table-cn-wubi-pinyin', 'ctags',
-	'virtualbox', 'python3-tk', 'python3-virtualenv', 'docker', 'python3-devel', 'python3-curses',
+	'virtualbox', 'python3-tk', 'python3-virtualenv', 'docker', 'python3-devel', 'python3-curses', 'htop', 'redshift'
 	' -t pattern devel_basis', 'imagewriter',]
 # 'sudo zypper install -t pattern devel_basis'  build essential
 ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
