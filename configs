@@ -5,10 +5,9 @@ repos: repo-oss repo-non-oss repo-update-oss repo-update-non-oss repo-update
 version: 42.2
 addrepos: 
 	https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Leap_42.2/ tuna-packman,
-	http://download.opensuse.org/repositories/devel:/languages:/python3/openSUSE_Leap_42.2/ dev-py3,
+	http://download.opensuse.org/repositories/devel:/languages:/python3/openSUSE_Leap_42.2/ dev-py3
 	
 #reserved: repo-update
-#
 
 [repourl]
 tuna: https://mirrors.tuna.tsinghua.edu.cn/
@@ -19,9 +18,6 @@ ustc: https://mirrors.ustc.edu.cn/
 repos: repo-oss repo-non-oss 
 reserved: repo-update
 
-# sudo zypper ar -fc https://mirrors.ustc.edu.cn/opensuse/distribution/leap/42.2/repo/oss USTC:42.2:OSS
-# sudo zypper ar -fc https://mirrors.ustc.edu.cn/opensuse/distribution/leap/42.2/repo/non-oss USTC:42.2:NON-OSS
-# sudo zypper ar -fc https://mirrors.ustc.edu.cn/opensuse/update/leap/42.2/oss USTC:42.2:UPDATE-OSS
-# sudo zypper ar -fc https://mirrors.ustc.edu.cn/opensuse/update/leap/42.2/non-oss USTC:42.2:UPDATE-NON-OSS
-
-[config-softwares]
+[softs_suse]
+basicsofts: -t pattern devel_basis,
+popsofts: git, fcitx-table-cn-wubi-pinyin, ctags, virtualbox,  python3-tk, python3-virtualenv, docker, python3-devel, imagewriter 
