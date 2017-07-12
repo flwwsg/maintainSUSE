@@ -184,6 +184,6 @@ if __name__ == '__main__':
         for num in sys.argv:
             try:
                 flist[int(num)-1]()
-            except:
+            except Exception:
                 print('something wrong')
     
