@@ -162,3 +162,28 @@ class ChangeRepo(object):
 # 	os.system('sudo usermod -aG %s dev' % group)
 # # sudo usermod -aG groupName userName
 # # sudo usermod -aG vboxusers lblue
+
+if __name__ == '__main__':
+    def testing():
+        print('ok')
+
+    flist = [
+        changerepo,
+        install_software,
+        get_hosts,
+        install_pip_module,
+        improved_bash,
+        add_repos,
+        testing,
+    ]
+    if len(sys.argv) < 2:
+        print('using python3 changeRepo.py function_you_want_to_run')
+        for i, func in enumerate(flist):
+            print('for %s enter: %s\n' % (func.__name__, i+1))
+    else:
+        for num in sys.argv:
+            try:
+                flist[int(num)-1]()
+            except:
+                pass
+    
