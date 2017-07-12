@@ -78,8 +78,38 @@ class TestChangeRepo(BaseChangeRepoTest):
         self.assertTrue(infos)
         self.assertEqual(infos, patts)
 
+    @unittest.skip
+    def test_update_hosts(self):
+        infos = []
+        with mock.patch('os.system', lambda x: infos.append(x)):
+            cr.get_hosts()
+        self.assertTrue(os.path.exists('hosts'))
+        self.assertTrue(os.path.exists('hosts_test'))
+        hosts = open('hosts').read()
+        hosts_test = open('hosts_test').read()
+        self.assertTrue(infos)
+        self.assertEqual(hosts, hosts_test)
+
+    def test_get_user_info(self):
+        infos = cr.get_userinfo(1100)
+        self.assertIsNone(infos)
+        infos = cr.get_userinfo()
+        self.assertEqual(infos, ('dev', '/home/dev'))
+
     def test_add_repos(self):
-        self.fail('to be implemented')
+        infos = []
+        patts = [
+            'sudo zypper ar -fc https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Leap_42.2/ tuna-packman',
+	        'sudo zypper ar -fc http://download.opensuse.org/repositories/devel:/languages:/python3/openSUSE_Leap_42.2/ dev-py3',
+            'sudo rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg',
+	        'sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc',
+	        'sudo zypper addrepo -g -f https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo',
+	        'sudo sh -c \'echo -e "[code]\\nname=Visual Studio Code\\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\\nenabled=1\\ntype=rpm-md\\ngpgcheck=1\\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/zypp/repos.d/vscode.repo\''
+        ]
+        with mock.patch('os.system', lambda x: infos.append(x)):
+            notnone = cr.add_repos()
+        self.assertTrue(notnone)
+        self.assertEqual(infos, patts)
 
 
 if __name__ == '__main__':

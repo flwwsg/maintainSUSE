@@ -8,8 +8,8 @@ import os
 import sys
 import time
 import configparser
-
-# from urllib.request import urlopen
+from urllib.request import urlopen
+import pwd
 
 # OSINFO = {'id':'plantform', 'pretty_name':'version'}
 SUPPORTEDOS = ['opensuse', 'tumbleweed']
@@ -26,7 +26,7 @@ config = get_config()
 
 def changerepo(plantform='opensuse', mirrorname='tuna'):
     """change software repository to mirror site in china"""
-    mirrorurl = config['repourl'][mirrorname] + plantform
+    mirrorurl = config['common'][mirrorname] + plantform
     repos = config[plantform]['repos'].split()
     reserved = config[plantform].get('reserved', '').split()
     default_url = 'http://download.opensuse.org'
@@ -61,17 +61,18 @@ def install_software(plantform='opensuse', softs=[]):
 
 
 def install_pip_module(file='', softs=[]):
+    pipindex = config['common'].get('pipindex','https://pypi.python.org/simple')
     if not file:
         os.system(
-            'sudo pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/')
+            'sudo pip install -r requirements.txt -i %s' % pipindex)
     else:
         os.system(
-            'sudo pip install -r %s -i https://pypi.tuna.tsinghua.edu.cn/simple/' % file)
+            'sudo pip install -r %s -i %s' % (file, pipindex))
 
     if softs:
         for soft in softs:
             os.system(
-                'sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ %s' % soft)
+                'sudo pip install -i %s %s' % (pipindex, soft))
     else:
         pass
 
@@ -90,13 +91,39 @@ def improved_bash(alias={}, echos=[], cmds=[], filename=''):
         os.system(cmd)
 
 
-def add_repos(repos):
+def add_repos(repos='', plantform='opensuse', version='42.2'):
+    if config[plantform]['version'] != version:
+        return False
+    if not repos:
+        repos = config[plantform]['addrepos'].split(',')[:-1]
     for repo in repos:
-        os.system('sudo zypper ar -fc %s' % repo)
-    repos = config['cusrepos']
+        os.system('sudo zypper ar -fc %s' % repo.strip())
+    repos = config['common']['cusrepos'].split(',')[:-1]
+    for repo in repos:
+        # print(repo.lstrip())
+        os.system(repo.lstrip())
+    return True
+    
 
-    for repo in repos:
-        os.system(repo)
+def get_hosts():
+    html = urlopen('https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts')
+    with open('hosts','wb') as f:
+        f.write(html.read())
+    #copy hosts
+    os.system('sudo cat ./hosts >> /etc/hosts')
+    os.system('sudo systemctl restart NetworkManager')
+    time.sleep(10)
+
+def get_userinfo(uid=1000):
+    try:
+        infos = pwd.getpwuid(uid)
+    except Exception:
+        return None
+
+    dirname = infos.pw_dir
+    username = infos.pw_name
+    return username, dirname
+
 
 # class ChangeRepo(object):
 # 	"""change repository to chinese mirror"""
@@ -123,70 +150,6 @@ def add_repos(repos):
 # 			exit(1)
 
 
-# euid = os.geteuid()
-# if euid != 0:
-# 	print('try: sudo python3 changeRepo.py')
-# 	exit(1)
-
-# pattern = 'http://download.opensuse.org'
-# replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-# softwares = ['git', 'fcitx-table-cn-wubi-pinyin','ctags' , 'virtualbox',
-# 			'python3-tk','python3-virtualenv' , 'docker', 'python3-devel', ' -t pattern devel_basis',
-# 			'imagewriter',]
-# 			 # 'sudo zypper install -t pattern devel_basis'  build essential
-# ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
-# 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
-# groups = ['docker', 'vboxusers']
-
-# # reserve = ['repo-update','repo-update-non-oss']
-# reserve = list()
-# addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
-# remove = 'sudo zypper removerepo %s'
-# packman = 'https://mirrors.tuna.tsinghua.edu.cn/packman/suse/%s/'
-
-# hfile = 'hosts'
-
-# html = urlopen('https://raw.githubusercontent.com/flwwsg/hosts/master/hosts')
-# with open(hfile,'wb') as f:
-# 	f.write(html.read())
-# #copy hosts
-# os.system('sudo cat ./hosts >> /etc/hosts')
-# os.system('sudo systemctl restart NetworkManager')
-# time.sleep(10)
-# #packman
-# versions = os.popen('cat /etc/os-release').readlines()
-# for line in versions:
-# 	tmp = line.strip().replace('"','').split('=')
-# 	if tmp[0] == 'PRETTY_NAME':
-# 		version = tmp[1].replace(' ','_')
-# 		break
-# repos = dict()
-# repos['tuna-packman'] = packman % version
-
-# outs = os.popen('zypper repos -d').readlines()
-# for line in outs[2:]:
-# 	tmp = line.split('|')
-# 	alias = tmp[1].strip()
-# 	url = tmp[8]
-# 	os.system(remove % alias)
-# 	if alias in ignore or not alias:
-# 		continue
-# 	else:
-# 		if alias in reserve:
-# 			repos[alias] = url
-# 		turl = url.replace(pattern, replace)
-# 		tname = alias if alias.startswith('tuna-') else 'tuna-'+alias
-# 		repos[tname] = turl
-
-# for name, url in repos.items():
-# 	os.system(addrepo % (name, url, name))
-
-# # zypper refresh
-# os.system('sudo zypper refresh')
-
-# for software in softwares:
-# 	os.system('sudo zypper in -y %s' % software)
-
 # #configure git
 # os.system('git config --global user.email "2319406132@qq.com"')
 # os.system("git config --global user.name 'flwwsg'")
@@ -197,103 +160,3 @@ def add_repos(repos):
 # 	os.system('sudo usermod -aG %s dev' % group)
 # # sudo usermod -aG groupName userName
 # # sudo usermod -aG vboxusers lblue
-
-# def gen_bashrc():
-# 	alias = {'grep':'grep -E --color=auto',
-# 		# 'pip':'pip -i https://pypi.tuna.tsinghua.edu.cn/simple/'
-# 		}
-# # =======
-# from urllib.request import urlopen
-# import grp
-# import getpass
-
-# euid = os.geteuid()
-# if euid != 0:
-# 	print('try: sudo python3 changeRepo.py')
-# 	exit(1)
-
-# pattern = 'http://download.opensuse.org'
-# replace = 'https://mirrors.tuna.tsinghua.edu.cn/opensuse'
-# softwares = ['chromium', 'git', 'fcitx-table-cn-wubi-pinyin', 'ctags',
-# 	'virtualbox', 'python3-tk', 'python3-virtualenv', 'docker', 'python3-devel', 'python3-curses',
-# 	' -t pattern devel_basis', 'imagewriter',]
-# # 'sudo zypper install -t pattern devel_basis'  build essential
-# ignore = ['repo-debug', 'repo-debug-non-oss', 'repo-debug-update',
-# 			'repo-debug-update-non-oss','repo-source', 'repo-source-non-oss']
-# groups = ['docker', 'vboxusers']
-
-# # reserve = ['repo-update','repo-update-non-oss']
-# reserve = list()
-# addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
-# remove = 'sudo zypper removerepo %s'
-# packman = 'https://mirrors.tuna.tsinghua.edu.cn/packman/suse/%s/'
-
-# hfile = 'hosts'
-
-# html = urlopen('https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts')
-# with open(hfile,'wb') as f:
-# 	f.write(html.read())
-# #copy hosts
-# os.system('sudo cat ./hosts >> /etc/hosts')
-# os.system('sudo systemctl restart NetworkManager')
-# time.sleep(10)
-# #packman
-# versions = os.popen('cat /etc/os-release').readlines()
-# for line in versions:
-# 	tmp = line.strip().replace('"','').split('=')
-# 	if tmp[0] == 'PRETTY_NAME':
-# 		version = tmp[1].replace(' ','_')
-# 		break
-# repos = dict()
-# repos['tuna-packman'] = packman % version
-
-# outs = os.popen('zypper repos -d').readlines()
-# for line in outs[2:]:
-# 	tmp = line.split('|')
-# 	alias = tmp[1].strip()
-# 	url = tmp[8]
-# 	os.system(remove % alias)
-# 	if alias in ignore or not alias:
-# 		continue
-# 	else:
-# 		if alias in reserve:
-# 			repos[alias] = url
-# 		turl = url.replace(pattern, replace)
-# 		tname = alias if alias.startswith('tuna-') else 'tuna-'+alias
-# 		repos[tname] = turl
-
-# for name, url in repos.items():
-# 	os.system(addrepo % (name, url, name))
-
-# # zypper refresh
-# os.system('sudo zypper refresh')
-
-# for software in softwares:
-# 	os.system('sudo zypper in -y %s' % software)
-
-# #configure git
-# os.system('git config --global user.email "2319406132@qq.com"')
-# os.system("git config --global user.name 'flwwsg'")
-
-# #pip pakage
-# pkgs = ['bpython']
-
-# for pkg in pkgs:
-#     os.system('sudo pip -i https://pypi.tuna.tsinghua.edu.cn/simple/ install %s'%pkg)
-
-# # add groups
-# uname = getpass.getuser()
-# for group in groups:
-#     os.system('sudo usermod -aG %s %s' % group, uname)
-# >>>>>>> ea81b6f82fce8992cf94726737a40bee764127ce
-
-# # sudo usermod -aG groupName userName
-# # sudo usermod -aG vboxusers lblue
-
-
-# def gen_bashrc():
-#     alias = {'grep':'grep -E --color=auto',
-# 		# 'pip':'pip -i https://pypi.tuna.tsinghua.edu.cn/simple/'
-# 		}
-# # https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo sublime repo
-# # >>>>>>> 0ffdd170f0f0ae648aa490c382a9a5cfc0117d05
