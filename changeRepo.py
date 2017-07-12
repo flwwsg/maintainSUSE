@@ -185,5 +185,5 @@ if __name__ == '__main__':
             try:
                 flist[int(num)-1]()
             except:
-                pass
+                print('something wrong')
     
