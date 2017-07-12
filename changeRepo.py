@@ -11,7 +11,6 @@ import configparser
 from urllib.request import urlopen
 import pwd
 
-# OSINFO = {'id':'plantform', 'pretty_name':'version'}
 SUPPORTEDOS = ['opensuse', 'tumbleweed']
 
 
@@ -61,7 +60,8 @@ def install_software(plantform='opensuse', softs=[]):
 
 
 def install_pip_module(file='', softs=[]):
-    pipindex = config['common'].get('pipindex','https://pypi.python.org/simple')
+    pipindex = config['common'].get(
+        'pipindex', 'https://pypi.python.org/simple')
     if not file:
         os.system(
             'sudo pip install -r requirements.txt -i %s' % pipindex)
@@ -80,7 +80,7 @@ def install_pip_module(file='', softs=[]):
 def improved_bash(alias={}, echos=[], cmds=[], filename=''):
     if not filename:
         filename = '~/.bashrc'
-        
+
     for cmd, alia in alias.items():
         os.system('echo "alias %s=\'%s\'" >> %s' % (cmd, alia, filename))
 
@@ -103,16 +103,18 @@ def add_repos(repos='', plantform='opensuse', version='42.2'):
         # print(repo.lstrip())
         os.system(repo.lstrip())
     return True
-    
+
 
 def get_hosts():
-    html = urlopen('https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts')
-    with open('hosts','wb') as f:
+    html = urlopen(
+        'https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts')
+    with open('hosts', 'wb') as f:
         f.write(html.read())
-    #copy hosts
+    # copy hosts
     os.system('sudo cat ./hosts >> /etc/hosts')
     os.system('sudo systemctl restart NetworkManager')
     time.sleep(10)
+
 
 def get_userinfo(uid=1000):
     try:
@@ -125,29 +127,29 @@ def get_userinfo(uid=1000):
     return username, dirname
 
 
-# class ChangeRepo(object):
-# 	"""change repository to chinese mirror"""
-# 	def __init__(self, plantform='',config='configs'):
-# 		self._chk_permission()
-# 		if not plantform:
-# 			self._get_plantform()
+class ChangeRepo(object):
+    """change repository to chinese mirror"""
 
-# 	def _get_plantform(self):
-# 		# versions = os.popen('cat /etc/os-release').readlines()
-# 		# for line in versions:
-# 		# 	tmp = line.strip().replace('"','').split('=')
-# 		# 	if tmp[0].lower() in OSINFO:
-# 		# 		setattr(self, plantform, tmp[1])
-# 				# if tmp[0] == 'PRETTY_NAME':
-# 				# 	version = tmp[1].replace(' ','_')
-# 				# 	break
-# 		self.plantform = 'opensuse'
+    def __init__(self, plantform='', version='', config='configs'):
+        self._chk_permission()
+        self.plantform = plantform
+        self.version = version
+        if not self.plantform or not self.version:
+            self._get_plantform()
 
-# 	def _chk_permission(self):
-# 		euid = os.geteuid()
-# 		if euid != 0:
-# 			print('try: sudo python3 changeRepo.py')
-# 			exit(1)
+    def _get_plantform(self):
+        versions = os.popen('cat /etc/os-release').readlines()
+        infos = {'ID': 'plantform', 'VERSION': 'version'}
+        for line in versions:
+            tmp = line.strip().replace('"', '').split('=')
+            if tmp[0] in infos.keys():
+                setattr(self, infos[tmp[0]], tmp[1])
+
+    def _chk_permission(self):
+        euid = os.geteuid()
+        if euid != 0:
+            print('try: sudo python3 changeRepo.py')
+            exit(1)
 
 
 # #configure git

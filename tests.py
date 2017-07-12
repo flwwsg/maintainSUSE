@@ -25,7 +25,14 @@ _supported = ['supported system', 'change repositories',
 
 class BaseChangeRepoTest(unittest.TestCase):
     """basic tests set for changeRepo.py"""
-    pass
+
+    class ChangeRepo(cr.ChangeRepo):
+        def _chk_permission(self):
+            pass
+    
+    # def setUp(self):
+    #     pass
+    
 
 
 class TestChangeRepo(BaseChangeRepoTest):
@@ -111,9 +118,14 @@ class TestChangeRepo(BaseChangeRepoTest):
         self.assertTrue(notnone)
         self.assertEqual(infos, patts)
 
+    def test_plantform(self):
+        instance = self.ChangeRepo()
+        self.assertEqual(instance.plantform, 'opensuse')
+        self.assertEqual(instance.version, '42.2')
 
-if __name__ == '__main__':
-    print('starting test....')
+
+# if __name__ == '__main__':
+#     print('starting test....')
     # help text
 # 	print('enter you want to test:')
 
