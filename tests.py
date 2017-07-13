@@ -52,34 +52,42 @@ class TestChangeRepo(BaseChangeRepoTest):
     # @unittest.skip
     def test_install_software(self):
         infos = []
-        softs = ['git', 'fcitx-table-cn-wubi-pinyin', 'ctags', 'imagewriter']
+        softs = ['imagewriter']
         with mock.patch('os.system', lambda x: infos.append(x)):
             cr.install_software(plantform='opensuse', softs=softs)
-
+        softs1 = ['chromium', 'git', 'fcitx-table-cn-wubi-pinyin', 'ctags', '-t pattern devel_basis']
+        softs.extend(softs1)
+        with mock.patch('os.system', lambda x: infos.append(x)):
+            cr.install_software(plantform='opensuse')
         patts = ['sudo zypper in -y %s' % soft for soft in softs]
         self.assertTrue(infos)
         self.assertEqual(infos, patts)
 
     # @unittest.skip
     def test_install_pip_module(self):
-        # softs = ['bpython']
         patts = ['sudo pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/',
-                 'sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ selenium']
+                 'sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ selenium',
+                 'sudo pip install -r requirement.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/',
+                 'sudo pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ virtualenvwrapper'
+                 ]
         infos = []
         with mock.patch('os.system', lambda x: infos.append(x)):
             cr.install_pip_module(file='requirements.txt', softs=['selenium'])
+
+        with mock.patch('os.system', lambda x: infos.append(x)):
+            cr.install_pip_module(file='requirement.txt')
+        
         self.assertTrue(infos)
         self.assertEqual(infos, patts)
 
     # @unittest.skip
     def test_improved_bash(self):
         infos = []
-        alias = {'test': 'newtest'}
-        patts = ['echo "alias test=\'newtest\'" >> ~/.bashrc',
-                 'echo export PATH=~/bin:$PATH >> ~/.bashrc']
+        patts = ['echo "alias grep=\'grep -E --color=auto\'" >> /home/dev/.bashrc',
+                 'echo PATH=~/.local/bin:$PATH >> /home/dev/.bashrc',
+                 'echo export PATH=~/bin:$PATH >> /home/dev/.bashrc']
         with mock.patch('os.system', lambda x: infos.append(x)):
-            cr.improved_bash(alias=alias, echos=[
-                             'export PATH=~/bin:$PATH'], filename='')
+            cr.improved_bash()
 
         self.assertTrue(infos)
         self.assertEqual(infos, patts)

@@ -12,20 +12,17 @@ group:
 	sudo usermod -aG vboxusers %s, 
 	sudo usermod -aG docker %s,
 
-suse_softs:chromium, git, fcitx-table-cn-wubi-pinyin, ctags, virtualbox, python3-tk, python3-virtualenv, docker ,python3-devel , python3-curses, 
-	htop,redshift,  imagewriter, docker,
+suse_softs:chromium, git, fcitx-table-cn-wubi-pinyin, ctags,
 basic_suse_softs:-t pattern devel_basis,
-pip_softs: 
+pip_softs: virtualenvwrapper,
 #pipinstall --user virtualenvwrapper
 
 [bash]
 alias: 
 	grep='grep -E --color=auto', 
-	sudo='sudo ', 
-	pipinstall='pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ ',
 echos: 
-	PATH=~/.local/bin:$PATH, 
-	source virtualenvwrapper.sh,
+	PATH=~/.local/bin:$PATH,
+	export PATH=~/bin:$PATH,
 cmds: 
 
 [opensuse]

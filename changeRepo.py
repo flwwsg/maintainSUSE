@@ -14,13 +14,17 @@ import pwd
 SUPPORTEDOS = ['opensuse', 'tumbleweed']
 
 
-def get_config(file='configs'):
+def get_config(fname='configs'):
     config = configparser.ConfigParser()
-    config.read_file(open(file))
+    debug = os.getenv('DEVHOME', '')
+    if debug:
+        fname = 'configs_test'
+    config.read_file(open(fname))
     return config
 
 
 config = get_config()
+SOFTS = {'opensuse': ('suse_softs', 'basic_suse_softs')}
 
 
 def changerepo(plantform='opensuse', mirrorname='tuna'):
@@ -55,13 +59,20 @@ def changerepo(plantform='opensuse', mirrorname='tuna'):
 
 
 def install_software(plantform='opensuse', softs=[]):
+    if not softs:
+        tlist = SOFTS.get(plantform, [])
+        for ll in tlist:
+            softs.extend(config['common'].get(ll, []).split(',')[:-1])
     for soft in softs:
-        os.system('sudo zypper in -y %s' % soft)
+        os.system('sudo zypper in -y %s' % soft.strip())
 
 
 def install_pip_module(file='', softs=[]):
     pipindex = config['common'].get(
-        'pipindex', 'https://pypi.python.org/simple')
+        'pipindex', 'https://pypi.python.org/simple').strip()
+    if not softs:
+        softs = config['common'].get('pip_softs', []).split(',')[:-1]
+        
     if not file:
         os.system(
             'sudo pip install -r requirements.txt -i %s' % pipindex)
@@ -69,23 +80,34 @@ def install_pip_module(file='', softs=[]):
         os.system(
             'sudo pip install -r %s -i %s' % (file, pipindex))
 
-    if softs:
-        for soft in softs:
-            os.system(
-                'sudo pip install -i %s %s' % (pipindex, soft))
-    else:
-        pass
+    for soft in softs:
+        os.system(
+            'sudo pip install -i %s %s' % (pipindex, soft))
 
 
 def improved_bash(alias={}, echos=[], cmds=[], filename=''):
+    username, userdir = get_userinfo()
     if not filename:
-        filename = '~/.bashrc'
+        filename = userdir+'/.bashrc'
 
+    if not alias:
+        newalias = config['bash']['alias'].split(',')[:-1]
+        for tmp in newalias:
+            tmp = tmp.strip()
+            func = tmp.strip().split('=')[0]
+            alias[func] = tmp[len(func)+1:]
+
+    if not echos:
+        echos = config['bash']['echos'].split(',')[:-1]
+
+    if not cmds:
+        cmds = config['bash']['cmds'].split(',')[:-1]
+        
     for cmd, alia in alias.items():
-        os.system('echo "alias %s=\'%s\'" >> %s' % (cmd, alia, filename))
+        os.system('echo "alias %s=%s" >> %s' % (cmd, alia, filename))
 
     for cmd in echos:
-        os.system('echo %s >> %s' % (cmd, filename))
+        os.system('echo %s >> %s' % (cmd.strip(), filename))
 
     for cmd in cmds:
         os.system(cmd)
@@ -132,6 +154,7 @@ class ChangeRepo(object):
 
     def __init__(self, plantform='', version='', config='configs'):
         self._chk_permission()
+        self._get_config()
         self.plantform = plantform
         self.version = version
         if not self.plantform or not self.version:
@@ -150,6 +173,15 @@ class ChangeRepo(object):
         if euid != 0:
             print('try: sudo python3 changeRepo.py')
             exit(1)
+
+    def _get_config(self):
+        self.config = configparser.ConfigParser()
+        debug = os.getenv('DEVHOME', '')
+        if debug:
+            fname = 'configs_test'
+        else:
+            fname = 'configs'
+        self.config.read_file(open(fname))            
 
 
 # #configure git
@@ -179,11 +211,10 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('using python3 changeRepo.py function_you_want_to_run')
         for i, func in enumerate(flist):
-            print('for %s enter: %s\n' % (func.__name__, i+1))
+            print('for %s enter: %s\n' % (func.__name__, i + 1))
     else:
         for num in sys.argv:
             try:
-                flist[int(num)-1]()
+                flist[int(num) - 1]()
             except Exception:
                 print('something wrong')
-    
