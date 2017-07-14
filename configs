@@ -22,7 +22,7 @@ pip_softs:
 alias: 
 	grep='grep -E --color=auto', 
 	sudo='sudo ', 
-	pipinstall='pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ ',
+	pipinstall='pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/',
 echos: 
 	PATH=~/.local/bin:$PATH, 
 	source virtualenvwrapper.sh,
