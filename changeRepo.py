@@ -22,6 +22,16 @@ def get_config(fname='configs'):
     config.read_file(open(fname))
     return config
 
+def get_userinfo(uid=1000):
+    try:
+        infos = pwd.getpwuid(uid)
+    except Exception:
+        return None, None
+
+    dirname = infos.pw_dir
+    username = infos.pw_name
+    return username, dirname
+
 
 config = get_config()
 SOFTS = {'opensuse': ('suse_softs', 'basic_suse_softs')}
@@ -128,8 +138,7 @@ def add_repos(repos='', plantform='opensuse', version='42.2'):
 
 
 def get_hosts():
-    html = urlopen(
-        'https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts')
+    html = urlopen(config['common']['hosts_url'])
     with open('hosts', 'wb') as f:
         f.write(html.read())
     # copy hosts
@@ -137,17 +146,11 @@ def get_hosts():
     os.system('sudo systemctl restart NetworkManager')
     time.sleep(10)
 
-
-def get_userinfo(uid=1000):
-    try:
-        infos = pwd.getpwuid(uid)
-    except Exception:
-        return None
-
-    dirname = infos.pw_dir
-    username = infos.pw_name
-    return username, dirname
-
+def add_group():
+    groups = config['common']['group'].split(',')[:-1]
+    username, userdir = get_userinfo()
+    for g in groups:
+        os.system(g.strip() % username)
 
 class ChangeRepo(object):
     """change repository to chinese mirror"""

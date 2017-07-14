@@ -106,7 +106,7 @@ class TestChangeRepo(BaseChangeRepoTest):
 
     def test_get_user_info(self):
         infos = cr.get_userinfo(1100)
-        self.assertIsNone(infos)
+        self.assertEqual(infos,(None,None))
         infos = cr.get_userinfo()
         self.assertEqual(infos, ('dev', '/home/dev'))
 
@@ -130,6 +130,18 @@ class TestChangeRepo(BaseChangeRepoTest):
         self.assertEqual(instance.plantform, 'opensuse')
         self.assertEqual(instance.version, '42.2')
 
+    def test_add_group(self):
+        infos = []
+        patts = [
+            'sudo usermod -aG vboxusers dev',
+            'sudo usermod -aG docker dev'
+        ]
+        with mock.patch('os.system', lambda x: infos.append(x)):
+            cr.add_group()
+        
+        self.assertTrue(infos)
+        self.assertEqual(infos, patts)
+        
 
 # if __name__ == '__main__':
 #     print('starting test....')
