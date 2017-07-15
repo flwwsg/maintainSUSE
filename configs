@@ -13,7 +13,7 @@ group:
 	sudo usermod -aG docker %%s,
 
 suse_softs:chromium, git, fcitx-table-cn-wubi-pinyin, ctags, virtualbox, python3-tk, python3-virtualenv, docker ,python3-devel , python3-curses, 
-	htop,redshift,  imagewriter, docker,
+	htop,redshift,  imagewriter, docker, code, sublime-text, chromedriver,
 basic_suse_softs:-t pattern devel_basis,
 pip_softs: 
 #pipinstall --user virtualenvwrapper

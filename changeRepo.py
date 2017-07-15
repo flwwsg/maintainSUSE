@@ -34,7 +34,7 @@ def get_userinfo(uid=1000):
 
 
 config = get_config()
-SOFTS = {'opensuse': ('suse_softs', 'basic_suse_softs')}
+SOFTS = {'opensuse': ('basic_suse_softs', 'suse_softs')}
 
 
 def changerepo(plantform='opensuse', mirrorname='tuna'):
@@ -66,6 +66,7 @@ def changerepo(plantform='opensuse', mirrorname='tuna'):
 
     for name, url in newrepos.items():
         os.system(addrepo % (name, url, name))
+    os.system('sudo  zypper update ')
 
 
 def install_software(plantform='opensuse', softs=[]):
@@ -134,6 +135,7 @@ def add_repos(repos='', plantform='opensuse', version='42.2'):
     for repo in repos:
         # print(repo.lstrip())
         os.system(repo.lstrip())
+    os.system('sudo zypper  --gpg-auto-import-keys ref')
     return True
 
 
@@ -209,6 +211,7 @@ if __name__ == '__main__':
         install_pip_module,
         improved_bash,
         add_repos,
+        add_group,
         testing,
     ]
     if len(sys.argv) < 2:
@@ -218,6 +221,7 @@ if __name__ == '__main__':
     else:
         for num in sys.argv:
             try:
-                flist[int(num) - 1]()
+            # print(sys.argv)
+            	flist[int(num) - 1]()
             except Exception:
-                print('something wrong')
+                pass
