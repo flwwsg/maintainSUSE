@@ -55,7 +55,7 @@ class TestChangeRepo(BaseChangeRepoTest):
         softs = ['imagewriter']
         with mock.patch('os.system', lambda x: infos.append(x)):
             cr.install_software(plantform='opensuse', softs=softs)
-        softs1 = ['chromium', 'git', 'fcitx-table-cn-wubi-pinyin', 'ctags', '-t pattern devel_basis']
+        softs1 = [ '-t pattern devel_basis', 'chromium', 'git', 'fcitx-table-cn-wubi-pinyin', 'ctags',]
         softs.extend(softs1)
         with mock.patch('os.system', lambda x: infos.append(x)):
             cr.install_software(plantform='opensuse')

@@ -13,21 +13,27 @@ group:
 	sudo usermod -aG docker %%s,
 
 suse_softs:chromium, git, fcitx-table-cn-wubi-pinyin, ctags, virtualbox, python3-tk, python3-virtualenv, docker ,python3-devel , python3-curses, 
-	htop,redshift,  imagewriter, docker, code, sublime-text, chromedriver,
+	htop,redshift, redshift-gtk,  imagewriter, docker, code, sublime-text, chromedriver,
+	
+	#code-decs
+	ffmpeg,lame,gstreamer-plugins-libav, gstreamer-plugins-bad,gstreamer-plugins-ugly, gstreamer-plugins-ugly-orig-addon,
+
 basic_suse_softs:-t pattern devel_basis,
 pip_softs: 
 #pipinstall --user virtualenvwrapper
+pip_softs_normaluser: pipinstall --user virtualenvwrapper,
+
 
 [bash]
-alias: 
+alias_normaluser: 
 	grep='grep -E --color=auto', 
 	sudo='sudo ', 
 	pipinstall='pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/',
-echos: 
+echos_normaluser: 
 	PATH=~/.local/bin:$PATH, 
-	#source virtualenvwrapper.sh,
-cmds: 
-
+	source virtualenvwrapper.sh,
+cmds_normaluser: 
+	export DEVHOME=true,
 [opensuse]
 installer: zypper 
 repos: repo-oss repo-non-oss repo-update-oss repo-update-non-oss repo-update
@@ -35,6 +41,8 @@ version: 42.2
 addrepos: 
 	https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Leap_42.2/ tuna-packman,
 	http://download.opensuse.org/repositories/devel:/languages:/python3/openSUSE_Leap_42.2/ dev-py3,
+	http://opensuse-guide.org/repo/openSUSE_Leap_42.2/ guide,
+	http://download.opensuse.org/repositories/home:/gmg137/openSUSE_Factory/ ssqt5,
 
 [tumbleweed]
 #installer: zypper

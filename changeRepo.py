@@ -118,7 +118,7 @@ def improved_bash(alias={}, echos=[], cmds=[], filename=''):
         os.system('echo "alias %s=%s" >> %s' % (cmd, alia, filename))
 
     for cmd in echos:
-        os.system('echo %s >> %s' % (cmd.strip(), filename))
+        os.system('echo \'%s >> %s\'' % (cmd.strip(), filename))
 
     for cmd in cmds:
         os.system(cmd)
