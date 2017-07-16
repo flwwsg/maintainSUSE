@@ -38,6 +38,7 @@ cmds_normaluser:
 installer: zypper 
 repos: repo-oss repo-non-oss repo-update-oss repo-update-non-oss repo-update
 version: 42.2
+reserved: repo-update 
 addrepos: 
 	http://packman.inode.at/suse/openSUSE_Leap_42.2/ packman,
 	http://download.opensuse.org/repositories/devel:/languages:/python3/openSUSE_Leap_42.2/ dev-py3,

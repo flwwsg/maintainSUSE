@@ -56,6 +56,8 @@ def changerepo(plantform='opensuse', mirrorname='tuna'):
         alias = tmp[1].strip()
         if alias not in reserved:
             os.system(removerepo % alias)
+        else:
+            continue
         if alias not in repos:
             continue
         url = tmp[8]
