@@ -34,6 +34,9 @@ echos_normaluser:
 	source virtualenvwrapper.sh,
 cmds_normaluser: 
 	export DEVHOME=true,
+cmds:
+#docker:http://c76344cd.m.daocloud.io
+
 [opensuse]
 installer: zypper 
 repos: repo-oss repo-non-oss repo-update-oss repo-update-non-oss repo-update
