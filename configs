@@ -13,7 +13,7 @@ group:
 	sudo usermod -aG docker %%s,
 
 suse_softs:chromium, git, fcitx-table-cn-wubi-pinyin, ctags, virtualbox, python3-tk, python3-virtualenv, docker ,python3-devel , python3-curses, 
-	htop,redshift, redshift-gtk,  imagewriter, docker, code, sublime-text, chromedriver,
+	htop,redshift, redshift-gtk,  imagewriter, docker, code, sublime-text, chromedriver,shadowsocks-qt5,
 	
 	#code-decs
 	ffmpeg,lame,gstreamer-plugins-libav, gstreamer-plugins-bad,gstreamer-plugins-ugly, gstreamer-plugins-ugly-orig-addon,
@@ -40,13 +40,13 @@ cmds:
 [opensuse]
 installer: zypper 
 repos: repo-oss repo-non-oss repo-update-oss repo-update-non-oss repo-update
-version: 42.2
+version: 42.3
 reserved: repo-update 
 addrepos: 
-	http://packman.inode.at/suse/openSUSE_Leap_42.2/ packman,
-	http://download.opensuse.org/repositories/devel:/languages:/python3/openSUSE_Leap_42.2/ dev-py3,
-	http://opensuse-guide.org/repo/openSUSE_Leap_42.2/ guide,
-	http://download.opensuse.org/repositories/home:/gmg137/openSUSE_Factory/ ssqt5,
+	http://packman.inode.at/suse/openSUSE_Leap_42.3/ packman,
+	http://download.opensuse.org/repositories/devel:/languages:/python3/openSUSE_Leap_42.3/ dev-py3,
+	http://opensuse-guide.org/repo/openSUSE_Leap_42.3/ guide,
+	http://download.opensuse.org/repositories/home:/gmg137/openSUSE_Leap_42.3/ ssqt5,
 
 [tumbleweed]
 #installer: zypper
