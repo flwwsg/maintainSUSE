@@ -9,13 +9,15 @@ import json
 # _supported = ['supported system', 'change repositories',
 #               'install pop software', 'install basic software', 'adding imporved bashrc', 'install pip module']
 
+class MockCustmOS(CustomOS):
+    def _chk_permission(self):
+        pass
+
 class TestInitialzeOpensuse(unittest.TestCase):
-    
     def setUp(self):
         self.configs = json.load(open('configs_test.json'))
-        mock_chk_permission = mock.MagicMock(return_value=True)
-        with mock.patch('custom.CustomOS._chk_permission', mock_chk_permission):
-            self.cr = CustomOS('ustc', 'configs_test.json')
+        self.cr = MockCustmOS('ustc', 'configs_test.json')
+        self.cr.check_prerequirements()
     
     def test_change_repo(self):
         infos = []
@@ -31,6 +33,7 @@ class TestInitialzeOpensuse(unittest.TestCase):
             self.cr.get_hosts()
         self.assertTrue(os.path.exists('hosts'))
         self.assertTrue(open('hosts').read())
+
 
 # class TestChangeRepo(BaseChangeRepoTest):
 #     def test_supported_system(self):

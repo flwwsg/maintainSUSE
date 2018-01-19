@@ -174,7 +174,6 @@ class CustomOS(object):
         if not self.plantform or not self.version:
             raise Exception('Unknown os.')
 
-
     def _chk_permission(self):
         euid = os.geteuid()
         if euid != 0:
@@ -198,22 +197,34 @@ class CustomOS(object):
             raise Exception('Not supported os named %s' % self.plantform)
         if self.version not in self.configs[self.plantform]['os']:
             raise Exception('Not supported version %s of %s' % (self.version, self.plantform))
-        
+        for repo in self.configs[self.plantform]['os'][self.version]['repos']:
+            url = repo['url']
+            self.chk_url(url)
+
         if not all([k in self.configs for k in ['common', 'bash']]):
             raise Exception('Can not find common or bash parameters in file named %s' % self.config_file)
 
         common_item = ['pypi', 'host', 'pip_software', self.mirror_name]
         if not all([k in self.configs['common'] for k in ['pypi', 'host', 'pip_software', self.mirror_name]]):
             raise Exception('Can not find all "%s" in common in file named %s' % (common_item, self.config_file))
-        # checking pypi
+
+        # checking common
         if 'pypi' not in self.configs['common']:
             raise Exception('Can not find pypi item in common dictory') 
         for url in self.configs['common']['pypi']:
-            try:
-                resp = urlopen(url, timeout=20).read()
-            except timeout:
-                raise Exception('Can not access %s' % url)     
-            
+            self.chk_url(url)
+        mirror_url = self.configs['common'][self.mirror_name]
+        self.chk_url(mirror_url)
+        host_url = self.configs['common']['host']
+        self.chk_url(host_url)
+
+    @staticmethod
+    def chk_url(url, time_out=30):
+        try:
+            resp = urlopen(url, timeout=time_out).read()
+        except timeout:
+            raise Exception('Can not access %s' % url)   
+
     def add_repo(self):
         '''
         add repository
@@ -230,7 +241,7 @@ class CustomOS(object):
         '''
         get host file to fight GFW
         '''
-        html = urlopen(self.configs['common']['host'], timeout=30)
+        html = urlopen(self.configs['common']['host'], timeout=20)
         with open('hosts', 'wb') as f:
             f.write(html.read())
         # copy hosts

@@ -47,7 +47,7 @@
                 "repos": [
                     {
                         "name": "packman",
-                        "url": "http://packman.inode.at/suse/openSUSE_Leap_42.3/"
+                        "url": "https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Leap_42.3/"
                     },
                     {
                         "name": "dev-py3",
