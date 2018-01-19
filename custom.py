@@ -151,9 +151,15 @@ class CustomOS(object):
         self.config_file = file_name
         self.plantform = ''
         self.version = ''
-        # self._chk_permission()
-        # self._get_config()
-        # self._get_plantform()
+        
+    def check_prerequirements(self):
+        '''
+        check requirement to run this program
+        '''
+        self._chk_permission()
+        self._get_config()
+        self._get_plantform()
+        self._chk_config()
 
     def _get_plantform(self):
         with open('/etc/os-release') as f:
@@ -181,15 +187,6 @@ class CustomOS(object):
         except Exception:
             print('Can not read json file named %s, properly wrong json formate' % self.config_file)
             sys.exit(1)
-    
-    def check_prerequirements(self):
-        '''
-        check requirement to run this program
-        '''
-        self._chk_permission()
-        self._get_config()
-        self._get_plantform()
-        self._chk_config()
 
     def _chk_config(self):
         '''
@@ -205,7 +202,7 @@ class CustomOS(object):
         if not all([k in self.configs for k in ['common', 'bash']]):
             raise Exception('Can not find common or bash parameters in file named %s' % self.config_file)
 
-        common_item = ['pypi', 'host', 'pip_software', self.mirror_name]]
+        common_item = ['pypi', 'host', 'pip_software', self.mirror_name]
         if not all([k in self.configs['common'] for k in ['pypi', 'host', 'pip_software', self.mirror_name]]):
             raise Exception('Can not find all "%s" in common in file named %s' % (common_item, self.config_file))
         # checking pypi

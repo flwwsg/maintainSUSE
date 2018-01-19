@@ -3,3 +3,4 @@ hosts
 .tag*
 .vscode/
 hosts_test
+.idea/
