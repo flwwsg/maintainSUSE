@@ -6,10 +6,15 @@
         ],
         "tuna": "https://mirrors.tuna.tsinghua.edu.cn/",
         "ustc": "https://mirrors.ustc.edu.cn/",
-        "pip_software": [
-            "virtualenvwrapper"
+        "pip_software": "requirements.txt",
+        "host": "https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts-files/hosts",
+        "cmd": [
+            "sudo usermod -aG vboxusers {USERNAME}"
         ],
-        "host": "https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts-files/hosts"
+        "env_var": [
+            "PIPINDEX",
+            "USERNAME"
+        ]            
     },
     "opensuse": {
         "software": [
@@ -19,18 +24,16 @@
             "fcitx-table-cn-wubi-pinyin",
             "ctags",
             "virtualbox",
-            "docker",
             "htop",
             "redshift",
             "redshift-gtk",
-            "imagewriter",
-            "docker",
             "code",
             "sublime-text",
             "chromedriver",
             "shadowsocks-qt5",
             "ffmpeg",
             "lame",
+            "imagewriter",
             "gstreamer-plugins-libav",
             "gstreamer-plugins-bad",
             "gstreamer-plugins-ugly",
@@ -73,6 +76,16 @@
             }
         }
     },
-    "bash": {},
+    "bash": {
+        "alias": {
+            "grep": "grep -E --color=auto",
+            "sudo": "sudo ",
+            "pipinstall": "pip install -i {PIPINDEX}"
+        },
+        "export":{},
+        "cmd": [
+            "PATH=~/.local/bin:$PATH\nexport VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3\nsource virtualenvwrapper.sh"
+        ]
+    },
     "ubuntu": {}
 }

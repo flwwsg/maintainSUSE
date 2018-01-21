@@ -13,6 +13,12 @@ import json
 import pwd
 from socket import timeout
 
+
+VAR_MAPPING = {
+    'PIPINDEX': 'get_var_pipindex',
+    'USERNAME': 'get_var_username',
+}
+
 # SUPPORTEDOS = ['opensuse', 'tumbleweed']
 # path = os.path.abspath(__file__)
 # fpath = os.path.join(os.path.dirname(path), 'configs.json')
@@ -76,24 +82,6 @@ from socket import timeout
 #         os.system('sudo zypper in -y %s' % soft.strip())
 
 
-# def install_pip_module(file='', softs=[]):
-#     pipindex = config['common'].get(
-#         'pipindex', 'https://pypi.python.org/simple').strip()
-#     if not softs:
-#         softs = config['common'].get('pip_softs', []).split(',')[:-1]
-        
-#     if not file:
-#         os.system(
-#             'sudo pip install -r requirements.txt -i %s' % pipindex)
-#     else:
-#         os.system(
-#             'sudo pip install -r %s -i %s' % (file, pipindex))
-
-#     for soft in softs:
-#         os.system(
-#             'sudo pip install -i %s %s' % (pipindex, soft))
-
-
 # def improved_bash(alias={}, echos=[], cmds=[], filename=''):
 #     username, userdir = get_userinfo()
 #     if not filename:
@@ -151,6 +139,7 @@ class CustomOS(object):
         self.config_file = file_name
         self.plantform = ''
         self.version = ''
+        self.check_prerequirements()
         
     def check_prerequirements(self):
         '''
@@ -168,9 +157,9 @@ class CustomOS(object):
             tmp = line.strip().split('=')
             name = tmp[0]
             if name == 'ID':
-                self.plantform = tmp[1].replace('"','')
+                self.plantform = tmp[1].replace('"','').lower()
             elif name == 'VERSION':
-                self.version = tmp[1].replace('"', '')
+                self.version = tmp[1].replace('"', '').lower()
         if not self.plantform or not self.version:
             raise Exception('Unknown os.')
 
@@ -203,20 +192,28 @@ class CustomOS(object):
 
         if not all([k in self.configs for k in ['common', 'bash']]):
             raise Exception('Can not find common or bash parameters in file named %s' % self.config_file)
-
+        
+        # checking common
         common_item = ['pypi', 'host', 'pip_software', self.mirror_name]
         if not all([k in self.configs['common'] for k in ['pypi', 'host', 'pip_software', self.mirror_name]]):
             raise Exception('Can not find all "%s" in common in file named %s' % (common_item, self.config_file))
 
-        # checking common
         if 'pypi' not in self.configs['common']:
             raise Exception('Can not find pypi item in common dictory') 
         for url in self.configs['common']['pypi']:
             self.chk_url(url)
+        req_file = self.configs['common']['pip_software']
+        if not os.path.exists(req_file):
+            raise Exception('Can not find file named %s' % req_file)
         mirror_url = self.configs['common'][self.mirror_name]
         self.chk_url(mirror_url)
         host_url = self.configs['common']['host']
         self.chk_url(host_url)
+
+    def __getattribute__(self, item):
+        if item[:8] == 'get_var_' and hasattr(self, item[8:]):
+            return getattr(self, item[8:])
+        return object.__getattribute__(self, item)
 
     @staticmethod
     def chk_url(url, time_out=30):
@@ -225,6 +222,38 @@ class CustomOS(object):
         except timeout:
             raise Exception('Can not access %s' % url)   
 
+    @staticmethod
+    def get_user_info(uid=1000):
+        # try:
+        #     infos = pwd.getpwuid(uid)
+        # except Exception:
+        #     return '', ''
+        infos = pwd.getpwuid(uid)
+        username = infos.pw_name
+        dirname = infos.pw_dir
+        return username, dirname
+
+    def get_var(self):
+        '''
+        get variable
+        '''
+        self.pipindex = self.configs['common']['pypi'][0]
+        self.username, self.userhome = self.get_user_info()
+
+    def get_cmd_var(self, cmd):
+        '''
+        get variable in cmd
+        '''
+        env = self.configs['common']['env_var']
+        var_map = {}
+        for var in env:
+            if var in cmd:
+                attr = getattr(self, VAR_MAPPING[var])
+                if callable(attr):
+                    attr = attr()
+                var_map[var] = attr
+        return var_map
+                
     def add_repo(self):
         '''
         add repository
@@ -249,10 +278,45 @@ class CustomOS(object):
         os.system('sudo systemctl restart NetworkManager')
         time.sleep(10)
 
+    def excute_cmd(self):
+        cmds = self.configs['common']['cmd']
+        for cmd in cmds:
+            k = self.get_cmd_var(cmd)
+            os.system(cmd.format(**k))
+
+    def write_bashrc(self):
+        '''
+        write bashrc
+        '''
+        bashrc = os.path.join(self.userhome, '.bashrc')
+        alias = self.configs['bash']['alias']
+        exports= self.configs['bash']['export']
+        cmds = self.configs['bash']['cmd']
+        with open(bashrc, 'a') as f:
+            for alia in self.configs['bash']['alias']:
+                var_map = self.get_cmd_var(alias[alia])
+                f.write('alias %s=\'%s\'\n' % (alia, alias[alia].format(**var_map)))
+            for export in exports:
+                f.write('export %s\n' % export)
+            for cmd in cmds:
+                f.write(cmd+'\n')
+
+
     def install_software(self):
         '''
         install software
         '''
+        software = self.configs[self.plantform]['software']
+        for soft in software:
+            os.system('sudo zypper in -y %s' % soft.strip())
+
+    def install_py_module(self):
+        '''
+        install pip module
+        '''
+        pipindex = self.configs['common']['pypi'][0]
+        req_file = self.configs['common']['pip_software']
+        os.system('sudo pip install -r %s -i %s' % (req_file, pipindex))
 
 
 
