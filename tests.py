@@ -18,13 +18,23 @@ class TestInitialzeOpensuse(unittest.TestCase):
         self.configs = json.load(open('configs_test.json'))
         self.cr = MockCustmOS('ustc', 'configs_test.json')
         self.cr.check_prerequirements()
+        self.plantform = self.cr.plantform
+
+    def mock_system(self, infos, func):
+        with mock.patch('os.system', lambda x: infos.append(x)):
+            if callable(func):
+                func()
+            elif hasattr(self, func):
+                getattr(self, func)()
+            else:
+                raise ValueError('Not supported function %s' % func)
     
     def test_change_repo(self):
         infos = []
-        with mock.patch('os.system', lambda x: infos.append(x)):
-            self.cr.add_repo()
+        self.mock_system(infos, self.cr.add_repo)
         self.assertTrue(infos)
-        self.assertTrue(all([url.startswith('sudo zypper addrepo') for url in infos]))
+        c_repos = self.configs[self.plantform]['custom_repos']
+        self.assertTrue(all([url.startswith('sudo zypper addrepo') for url in infos if url not in c_repos]))
 
     def test_get_hosts(self):
         if os.path.exists('hosts'):
@@ -33,6 +43,9 @@ class TestInitialzeOpensuse(unittest.TestCase):
             self.cr.get_hosts()
         self.assertTrue(os.path.exists('hosts'))
         self.assertTrue(open('hosts').read())
+
+    def test_install_software(self):
+        pass
 
 
 # class TestChangeRepo(BaseChangeRepoTest):

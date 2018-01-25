@@ -19,97 +19,6 @@ VAR_MAPPING = {
     'USERNAME': 'get_var_username',
 }
 
-# SUPPORTEDOS = ['opensuse', 'tumbleweed']
-# path = os.path.abspath(__file__)
-# fpath = os.path.join(os.path.dirname(path), 'configs.json')
-# CONFIGS = json.load(open(fpath))
-
-# def get_userinfo(uid=1000):
-#     try:
-#         infos = pwd.getpwuid(uid)
-#     except Exception:
-#         return None, None
-
-#     dirname = infos.pw_dir
-#     username = infos.pw_name
-#     return username, dirname
-
-
-# config = get_config()
-# SOFTS = {'opensuse': ('basic_suse_softs', 'suse_softs')}
-
-
-# def changerepo(plantform='opensuse', mirrorname='tuna'):
-#     """change software repository to mirror site in china"""
-#     mirrorurl = config['common'][mirrorname] + plantform
-#     repos = config[plantform]['repos'].split()
-#     reserved = config[plantform].get('reserved', '').split()
-#     default_url = 'http://download.opensuse.org'
-#     addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
-#     removerepo = 'sudo zypper removerepo %s'
-
-#     outs = os.popen('zypper repos -d').readlines()
-#     newrepos = {}
-#     for line in outs:
-#         tmp = line.split('|')
-#         if len(tmp) < 8 or tmp[1].strip() == 'Alias':
-#             continue
-
-#         alias = tmp[1].strip()
-#         if alias not in reserved:
-#             os.system(removerepo % alias)
-#         else:
-#             continue
-#         if alias not in repos:
-#             continue
-#         url = tmp[8]
-#         turl = url.replace(default_url, mirrorurl)
-#         tname = alias if alias.startswith(
-#             mirrorname + '-') else mirrorname + '-' + alias
-#         newrepos[tname] = turl
-
-#     for name, url in newrepos.items():
-#         os.system(addrepo % (name, url, name))
-#     os.system('sudo  zypper update ')
-
-
-# def install_software(plantform='opensuse', softs=[]):
-#     if not softs:
-#         tlist = SOFTS.get(plantform, [])
-#         for ll in tlist:
-#             softs.extend(config['common'].get(ll, []).split(',')[:-1])
-#     for soft in softs:
-#         os.system('sudo zypper in -y %s' % soft.strip())
-
-
-# def improved_bash(alias={}, echos=[], cmds=[], filename=''):
-#     username, userdir = get_userinfo()
-#     if not filename:
-#         filename = userdir+'/.bashrc'
-
-#     if not alias:
-#         newalias = config['bash']['alias'].split(',')[:-1]
-#         for tmp in newalias:
-#             tmp = tmp.strip()
-#             func = tmp.strip().split('=')[0]
-#             alias[func] = tmp[len(func)+1:]
-
-#     if not echos:
-#         echos = config['bash']['echos'].split(',')[:-1]
-
-#     if not cmds:
-#         cmds = config['bash']['cmds'].split(',')[:-1]
-        
-#     for cmd, alia in alias.items():
-#         os.system('echo "alias %s=%s" >> %s' % (cmd, alia, filename))
-
-#     for cmd in echos:
-#         os.system('echo \'%s >> %s\'' % (cmd.strip(), filename))
-
-#     for cmd in cmds:
-#         os.system(cmd)
-
-
 # def add_repos(repos='', plantform='opensuse', version='42.2'):
 #     if config[plantform]['version'] != version:
 #         return False
@@ -124,12 +33,6 @@ VAR_MAPPING = {
 #     os.system('sudo zypper  --gpg-auto-import-keys ref')
 #     return True
 
-
-# def add_group():
-#     groups = config['common']['group'].split(',')[:-1]
-#     username, userdir = get_userinfo()
-#     for g in groups:
-#         os.system(g.strip() % username)
 
 class CustomOS(object):
     """change repository to chinese mirror"""
@@ -214,6 +117,13 @@ class CustomOS(object):
         if item[:8] == 'get_var_' and hasattr(self, item[8:]):
             return getattr(self, item[8:])
         return object.__getattribute__(self, item)
+
+    @staticmethod
+    def clear_repos():
+        repo_dir = '/etc/zypp/repos.d/'
+        repos = os.listdir(repo_dir)
+        for repo in repos:
+            os.unlink(os.path.join(repo_dir, repo))
 
     @staticmethod
     def chk_url(url, time_out=30):
@@ -324,35 +234,29 @@ class CustomOS(object):
 # # os.system('git config --global user.email "2319406132@qq.com"')
 # # os.system("git config --global user.name 'flwwsg'")
 
-# # # add groups
-# # for group in groups:
-# # 	os.system('sudo usermod -aG %s lblue' % group)
-# # 	os.system('sudo usermod -aG %s dev' % group)
-# # # sudo usermod -aG groupName userName
-# # # sudo usermod -aG vboxusers lblue
 
-# if __name__ == '__main__':
-#     def testing():
-#         print('ok')
-
-#     flist = [
-#         changerepo,
-#         install_software,
-#         get_hosts,
-#         install_pip_module,
-#         improved_bash,
-#         add_repos,
-#         add_group,
-#         testing,
-#     ]
-#     if len(sys.argv) < 2:
-#         print('using python3 changeRepo.py function_you_want_to_run')
-#         for i, func in enumerate(flist):
-#             print('for %s enter: %s\n' % (func.__name__, i + 1))
-#     else:
-#         for num in sys.argv:
-#             try:
-#             # print(sys.argv)
-#             	flist[int(num) - 1]()
-#             except Exception:
-#                 pass
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-m', help='mirror name')
+    args, unknown = parser.parse_known_args()
+    m = args.m or 'tuna'
+    if m not in ['tuna', 'ustc']:
+        raise Exception('Please add mirror name %s in config.json')
+    print('checking config.json')
+    cos = CustomOS(m)
+    print('clearing repository')
+    cos.clear_repos()
+    print('geting host file')
+    cos.get_hosts()
+    print('adding repository')
+    cos.add_repo()
+    print('installing software')
+    cos.install_software()
+    print('installing pip module')
+    cos.install_py_module()
+    print('writing bashrc')
+    cos.write_bashrc()
+    print('excuting cmd')
+    cos.excute_cmd()
+    
