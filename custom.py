@@ -198,6 +198,7 @@ class CustomOS(object):
                 f.write('export %s\n' % export)
             for cmd in cmds:
                 f.write(cmd+'\n')
+        os.system('source ~/.bashrc')
 
 
     def install_software(self):
