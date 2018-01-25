@@ -19,7 +19,7 @@
     "opensuse": {
         "software": [
             "-t pattern devel_basis",
-            "chromium",
+            "chromiume",
             "git",
             "fcitx-table-cn-wubi-pinyin",
             "ctags",
@@ -85,20 +85,16 @@
                         "url": "https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Tumbleweed/"
                     },
                     {
-                        "name": "dev-py3",
-                        "url": "http://download.opensuse.org/repositories/devel:/languages:/python3/"
-                    },
-                    {
                         "name": "shadowsocks",
                         "url": "https://download.opensuse.org/repositories/home:/MargueriteSu/openSUSE_Tumbleweed/"
                     },
                     {
                         "name": "repo-non-oss",
-                        "url": "https://mirrors.tuna.tsinghua.edu.cn/opensuse/tumbleweed/repo/non-oss/"
+                        "url": "http://download.opensuse.org/tumbleweed/repo/non-oss/"
                     },
                     {
                         "name": "repo-oss",
-                        "url": "https://mirrors.tuna.tsinghua.edu.cn/opensuse/tumbleweed/repo/oss/"
+                        "url": "http://download.opensuse.org/tumbleweed/repo/oss/"
                     },
                     {
                         "name":"repo-update",
