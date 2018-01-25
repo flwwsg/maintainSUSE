@@ -76,7 +76,7 @@
                         "name": "repo-update-non-oss",
                         "url": "http://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/42.3/non-oss/"
                     }
-                ]
+                 ]
             },
             "tumbleweed": {
                 "repos": [
