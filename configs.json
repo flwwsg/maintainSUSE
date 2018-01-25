@@ -63,7 +63,7 @@
                 ]
             },
             "tumbleweed": {
-                "addrepos": [
+                "repos": [
                     {
                         "name": "tuna-packman",
                         "url": "https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Tumbleweed/"
