@@ -97,6 +97,7 @@
             "redshift",
             "redshift-gtk",
             "code",
+            "virtualbox",
             "sublime-text"
         ],
         "os": {
