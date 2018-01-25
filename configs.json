@@ -90,6 +90,7 @@
     "ubuntu": {
         "software": [
             "build-essential",
+            "python3-pip",
             "python-pip",
             "chromium-browser",
             "git",
