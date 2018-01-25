@@ -215,8 +215,7 @@ class CustomOS(object):
             return getattr(self, item[8:])
         return object.__getattribute__(self, item)
 
-    @staticmethod
-    def chk_url(url, time_out=30):
+    def chk_url(self, url, time_out=30):
         try:
             resp = urlopen(url, timeout=time_out).read()
         except timeout:
@@ -260,7 +259,7 @@ class CustomOS(object):
         '''
         repos = self.configs[self.plantform]['os'][self.version]['repos']
         custom_repos = self.configs[self.plantform]['custom_repos']
-        addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
+        addrepo = 'sudo zypper addrepo --gpg-auto-import-keys --check --refresh --name "%s" %s "%s"'
         for repo in repos:
             os.system(addrepo % (repo['name'], repo['url'], repo['name']))
         for crepo in custom_repos:
