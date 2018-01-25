@@ -65,6 +65,7 @@ class CustomOS(object):
         self._chk_permission()
         self._get_config()
         self._chk_config()
+        self.get_var()
 
     def _chk_permission(self):
         euid = os.geteuid()

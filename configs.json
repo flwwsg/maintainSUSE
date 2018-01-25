@@ -90,15 +90,14 @@
     "ubuntu": {
         "software": [
             "build-essential",
-            "chromium",
+            "chromium-browser",
             "git",
             "ctags",
             "htop",
             "redshift",
             "redshift-gtk",
             "code",
-            "sublime-text",
-            "chromedriver"
+            "sublime-text"
         ],
         "os": {
             "16.04": {

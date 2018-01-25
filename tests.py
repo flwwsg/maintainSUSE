@@ -76,7 +76,6 @@ class TestInitialzeOpensuse(unittest.TestCase):
             c_repos = self.configs[self.plantform]['custom_repos']
             self.assertTrue(all([url.startswith('sudo zypper addrepo') for url in infos if url not in c_repos]))
     
-
 # if __name__ == '__main__':
 #     print('starting test....')
     # help text
