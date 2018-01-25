@@ -19,97 +19,6 @@ VAR_MAPPING = {
     'USERNAME': 'get_var_username',
 }
 
-# SUPPORTEDOS = ['opensuse', 'tumbleweed']
-# path = os.path.abspath(__file__)
-# fpath = os.path.join(os.path.dirname(path), 'configs.json')
-# CONFIGS = json.load(open(fpath))
-
-# def get_userinfo(uid=1000):
-#     try:
-#         infos = pwd.getpwuid(uid)
-#     except Exception:
-#         return None, None
-
-#     dirname = infos.pw_dir
-#     username = infos.pw_name
-#     return username, dirname
-
-
-# config = get_config()
-# SOFTS = {'opensuse': ('basic_suse_softs', 'suse_softs')}
-
-
-# def changerepo(plantform='opensuse', mirrorname='tuna'):
-#     """change software repository to mirror site in china"""
-#     mirrorurl = config['common'][mirrorname] + plantform
-#     repos = config[plantform]['repos'].split()
-#     reserved = config[plantform].get('reserved', '').split()
-#     default_url = 'http://download.opensuse.org'
-#     addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
-#     removerepo = 'sudo zypper removerepo %s'
-
-#     outs = os.popen('zypper repos -d').readlines()
-#     newrepos = {}
-#     for line in outs:
-#         tmp = line.split('|')
-#         if len(tmp) < 8 or tmp[1].strip() == 'Alias':
-#             continue
-
-#         alias = tmp[1].strip()
-#         if alias not in reserved:
-#             os.system(removerepo % alias)
-#         else:
-#             continue
-#         if alias not in repos:
-#             continue
-#         url = tmp[8]
-#         turl = url.replace(default_url, mirrorurl)
-#         tname = alias if alias.startswith(
-#             mirrorname + '-') else mirrorname + '-' + alias
-#         newrepos[tname] = turl
-
-#     for name, url in newrepos.items():
-#         os.system(addrepo % (name, url, name))
-#     os.system('sudo  zypper update ')
-
-
-# def install_software(plantform='opensuse', softs=[]):
-#     if not softs:
-#         tlist = SOFTS.get(plantform, [])
-#         for ll in tlist:
-#             softs.extend(config['common'].get(ll, []).split(',')[:-1])
-#     for soft in softs:
-#         os.system('sudo zypper in -y %s' % soft.strip())
-
-
-# def improved_bash(alias={}, echos=[], cmds=[], filename=''):
-#     username, userdir = get_userinfo()
-#     if not filename:
-#         filename = userdir+'/.bashrc'
-
-#     if not alias:
-#         newalias = config['bash']['alias'].split(',')[:-1]
-#         for tmp in newalias:
-#             tmp = tmp.strip()
-#             func = tmp.strip().split('=')[0]
-#             alias[func] = tmp[len(func)+1:]
-
-#     if not echos:
-#         echos = config['bash']['echos'].split(',')[:-1]
-
-#     if not cmds:
-#         cmds = config['bash']['cmds'].split(',')[:-1]
-        
-#     for cmd, alia in alias.items():
-#         os.system('echo "alias %s=%s" >> %s' % (cmd, alia, filename))
-
-#     for cmd in echos:
-#         os.system('echo \'%s >> %s\'' % (cmd.strip(), filename))
-
-#     for cmd in cmds:
-#         os.system(cmd)
-
-
 # def add_repos(repos='', plantform='opensuse', version='42.2'):
 #     if config[plantform]['version'] != version:
 #         return False
@@ -125,20 +34,28 @@ VAR_MAPPING = {
 #     return True
 
 
-# def add_group():
-#     groups = config['common']['group'].split(',')[:-1]
-#     username, userdir = get_userinfo()
-#     for g in groups:
-#         os.system(g.strip() % username)
+# def _get_plantform(self):
+#     with open('/etc/os-release') as f:
+#         infos = f.readlines()
+#     for line in infos:
+#         tmp = line.strip().split('=')
+#         name = tmp[0]
+#         if name == 'ID':
+#             self.plantform = tmp[1].replace('"','').lower()
+#         if name == 'VERSION':
+#             self.version = tmp[1].replace('"', '').lower()
+#     if not self.plantform or not self.version:
+#         raise Exception('Unknown os.')
+
 
 class CustomOS(object):
     """change repository to chinese mirror"""
 
-    def __init__(self, mirror_name, file_name='configs.json'):
+    def __init__(self, plantform, version, mirror_name, file_name='configs.json'):
         self.mirror_name = mirror_name
         self.config_file = file_name
-        self.plantform = ''
-        self.version = ''
+        self.plantform = plantform
+        self.version = version
         self.check_prerequirements()
         
     def check_prerequirements(self):
@@ -147,21 +64,8 @@ class CustomOS(object):
         '''
         self._chk_permission()
         self._get_config()
-        self._get_plantform()
         self._chk_config()
-
-    def _get_plantform(self):
-        with open('/etc/os-release') as f:
-            infos = f.readlines()
-        for line in infos:
-            tmp = line.strip().split('=')
-            name = tmp[0]
-            if name == 'ID':
-                self.plantform = tmp[1].replace('"','').lower()
-            elif name == 'VERSION':
-                self.version = tmp[1].replace('"', '').lower()
-        if not self.plantform or not self.version:
-            raise Exception('Unknown os.')
+        self.get_var()
 
     def _chk_permission(self):
         euid = os.geteuid()
@@ -180,19 +84,6 @@ class CustomOS(object):
         '''
         checking parameters specified in configs
         '''
-
-        # checking repository
-        if self.plantform not in self.configs:
-            raise Exception('Not supported os named %s' % self.plantform)
-        if self.version not in self.configs[self.plantform]['os']:
-            raise Exception('Not supported version %s of %s' % (self.version, self.plantform))
-        for repo in self.configs[self.plantform]['os'][self.version]['repos']:
-            url = repo['url']
-            self.chk_url(url)
-
-        if not all([k in self.configs for k in ['common', 'bash']]):
-            raise Exception('Can not find common or bash parameters in file named %s' % self.config_file)
-        
         # checking common
         common_item = ['pypi', 'host', 'pip_software', self.mirror_name]
         if not all([k in self.configs['common'] for k in ['pypi', 'host', 'pip_software', self.mirror_name]]):
@@ -209,13 +100,27 @@ class CustomOS(object):
         self.chk_url(mirror_url)
         host_url = self.configs['common']['host']
         self.chk_url(host_url)
+        if self.plantform not in self.configs:
+            raise Exception('Not supported os named %s' % self.plantform)
+        if self.version not in self.configs[self.plantform]['os']:
+            raise Exception('Not supported version %s of %s' % (self.version, self.plantform))
+        if not all([k in self.configs for k in ['common', 'bash']]):
+            raise Exception('Can not find common or bash parameters in file named %s' % self.config_file)
 
     def __getattribute__(self, item):
         if item[:8] == 'get_var_' and hasattr(self, item[8:]):
             return getattr(self, item[8:])
         return object.__getattribute__(self, item)
 
-    def chk_url(self, url, time_out=30):
+    @staticmethod
+    def clear_repos():
+        repo_dir = '/etc/zypp/repos.d/'
+        repos = os.listdir(repo_dir)
+        for repo in repos:
+            os.unlink(os.path.join(repo_dir, repo))
+
+    @staticmethod
+    def chk_url(url, time_out=30):
         try:
             resp = urlopen(url, timeout=time_out).read()
         except timeout:
@@ -257,13 +162,7 @@ class CustomOS(object):
         '''
         add repository
         '''
-        repos = self.configs[self.plantform]['os'][self.version]['repos']
-        custom_repos = self.configs[self.plantform]['custom_repos']
-        addrepo = 'sudo zypper addrepo --gpg-auto-import-keys --check --refresh --name "%s" %s "%s"'
-        for repo in repos:
-            os.system(addrepo % (repo['name'], repo['url'], repo['name']))
-        for crepo in custom_repos:
-            os.system(crepo)
+        raise NotImplementedError
 
     def get_hosts(self):
         '''
@@ -299,7 +198,89 @@ class CustomOS(object):
                 f.write('export %s\n' % export)
             for cmd in cmds:
                 f.write(cmd+'\n')
+        os.system('source ~/.bashrc')
 
+
+    def install_software(self):
+        '''
+        install software
+        '''
+        raise NotImplementedError
+
+    def install_py_module(self):
+        '''
+        install pip module
+        '''
+        pipindex = self.configs['common']['pypi'][0]
+        req_file = self.configs['common']['pip_software']
+        os.system('sudo pip3 install -r %s -i %s' % (req_file, pipindex))
+
+
+class Ubuntu(CustomOS):
+    '''
+    initializing ubuntn os
+    '''
+    def __init__(self, version, mirror_name, file_name='configs.json'):
+        CustomOS.__init__(self, 'ubuntu', version, mirror_name, file_name)
+
+    def _chk_config(self):
+        CustomOS._chk_config(self)
+        to_be_check = self.configs[self.plantform]['os'][self.version]
+        if self.mirror_name not in to_be_check or not to_be_check[self.mirror_name]:
+            raise Exception('Repository url is required for %s of %s' % (self.version, self.plantform))
+        self.chk_url(to_be_check[self.mirror_name])
+        if not 'repos' in to_be_check or not to_be_check['repos']:
+            raise Exception('Need source name in %s of %s\'s repos' % (self.version, self.plantform))
+
+    def clear_repos(self):
+        source_path = '/etc/apt/sources.list'
+        os.rename(source_path, source_path+'.bak')
+
+    def add_repo(self):
+        source_path = '/etc/apt/sources.list'
+        sources = []
+        url = self.configs[self.plantform]['os'][self.version][self.mirror_name]
+        for repo in self.configs[self.plantform]['os'][self.version]['repos']:
+            sources.append('deb %s %s' % (url, repo))
+        with open(source_path, 'w') as f:
+            f.write('\n'.join(sources))
+        for repo in self.configs[self.plantform]['os'][self.version]['custom_repos']:
+            os.system(repo)
+        os.system('sudo apt-get update')
+    
+    def install_software(self):
+        software = self.configs[self.plantform]['software']
+        for soft in software:
+            os.system('sudo apt-get -y install %s' % soft)
+        
+class Opensuse(CustomOS):
+    '''
+    initializing opensuse
+    '''
+    def __init__(self, version, mirror_name, file_name='configs.json'):
+        CustomOS.__init__(self, 'opensuse', version, mirror_name, file_name)
+
+    def _chk_config(self):
+        # checking repository
+        CustomOS._chk_config(self)
+        for repo in self.configs[self.plantform]['os'][self.version]['repos']:
+            url = repo['url']
+            self.chk_url(url)
+
+    def clear_repos(self):
+        repo_dir = '/etc/zypp/repos.d/'
+        repos = os.listdir(repo_dir)
+        for repo in repos:
+            os.unlink(os.path.join(repo_dir, repo))
+
+    def add_repo(self):
+        repos = self.configs[self.plantform]['os'][self.version]['repos']
+        custom_repos = self.configs[self.plantform]['custom_repos']
+        addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
+        for repo in repos:
+            os.system(addrepo % (repo['name'], repo['url'], repo['name']))
+        for crepo in custom_repos:
+            os.system(crepo)
 
     def install_software(self):
         '''
@@ -309,49 +290,53 @@ class CustomOS(object):
         for soft in software:
             os.system('sudo zypper in -y %s' % soft.strip())
 
-    def install_py_module(self):
-        '''
-        install pip module
-        '''
-        pipindex = self.configs['common']['pypi'][0]
-        req_file = self.configs['common']['pip_software']
-        os.system('sudo pip install -r %s -i %s' % (req_file, pipindex))
+# #configure git
+# os.system('git config --global user.email "2319406132@qq.com"')
+# os.system("git config --global user.name 'flwwsg'")
 
 
+if __name__ == '__main__':
+    with open('/etc/os-release') as f:
+        infos = f.readlines()
+    plantform = ''
+    for line in infos:
+        tmp = line.strip().split('=')
+        name = tmp[0]
+        if name == 'ID':
+            plantform = tmp[1].replace('"', '').lower()
+            break
 
-# # #configure git
-# # os.system('git config --global user.email "2319406132@qq.com"')
-# # os.system("git config --global user.name 'flwwsg'")
+    if plantform not in ['ubuntu', 'opensuse']:
+        raise Exception('Unknown os %s' % plantform)
 
-# # # add groups
-# # for group in groups:
-# # 	os.system('sudo usermod -aG %s lblue' % group)
-# # 	os.system('sudo usermod -aG %s dev' % group)
-# # # sudo usermod -aG groupName userName
-# # # sudo usermod -aG vboxusers lblue
-
-# if __name__ == '__main__':
-#     def testing():
-#         print('ok')
-
-#     flist = [
-#         changerepo,
-#         install_software,
-#         get_hosts,
-#         install_pip_module,
-#         improved_bash,
-#         add_repos,
-#         add_group,
-#         testing,
-#     ]
-#     if len(sys.argv) < 2:
-#         print('using python3 changeRepo.py function_you_want_to_run')
-#         for i, func in enumerate(flist):
-#             print('for %s enter: %s\n' % (func.__name__, i + 1))
-#     else:
-#         for num in sys.argv:
-#             try:
-#             # print(sys.argv)
-#             	flist[int(num) - 1]()
-#             except Exception:
-#                 pass
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-m', help='mirror name, default is tuna mirror')
+    parser.add_argument('-v', help='os version, like 16.04 for ubuntu, tumbleweed for opensuse')
+    args, unknown = parser.parse_known_args()
+    m = args.m or 'tuna'
+    if m not in ['tuna', 'ustc']:
+        raise Exception('Please add mirror name %s in config.json')
+    if not args.v:
+        print(parser.print_help())
+        sys.exit(1)
+    print('checking config.json')
+    if plantform == 'ubuntu':
+        cos = Ubuntu(args.v, m)
+    elif plantform == 'opensuse':
+        cos = Opensuse(args.v, m)
+    print('clearing repository')
+    cos.clear_repos()
+    print('geting host file')
+    cos.get_hosts()
+    print('adding repository')
+    cos.add_repo()
+    print('installing software')
+    cos.install_software()
+    print('installing pip module')
+    cos.install_py_module()
+    print('writing bashrc')
+    cos.write_bashrc()
+    print('excuting cmd')
+    cos.excute_cmd()
+    
