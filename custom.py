@@ -212,7 +212,7 @@ class CustomOS(object):
         '''
         pipindex = self.configs['common']['pypi'][0]
         req_file = self.configs['common']['pip_software']
-        os.system('sudo pip install -r %s -i %s' % (req_file, pipindex))
+        os.system('sudo pip3 install -r %s -i %s' % (req_file, pipindex))
 
 
 class Ubuntu(CustomOS):
