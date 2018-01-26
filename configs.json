@@ -19,7 +19,7 @@
     "opensuse": {
         "software": [
             "-t pattern devel_basis",
-            "chromium",
+            "chromiume",
             "git",
             "fcitx-table-cn-wubi-pinyin",
             "ctags",
@@ -59,8 +59,24 @@
                     {
                         "name": "shadowsocks",
                         "url": "http://download.opensuse.org/repositories/home:/gmg137/openSUSE_Leap_42.3/"
+                    },
+                    {
+                        "name": "repo-non-oss",
+                        "url": "https://mirrors.tuna.tsinghua.edu.cn/opensuse/distribution/leap/42.3/repo/non-oss/"
+                    },
+                    {
+                        "name": "repo-oss",
+                        "url": "https://mirrors.tuna.tsinghua.edu.cn/opensuse/distribution/leap/42.3/repo/oss/"
+                    },
+                    {
+                        "name":"repo-update",
+                        "url": "http://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/42.3/oss/"
+                    },
+                    {
+                        "name": "repo-update-non-oss",
+                        "url": "http://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/42.3/non-oss/"
                     }
-                ]
+                 ]
             },
             "tumbleweed": {
                 "repos": [
@@ -69,11 +85,23 @@
                         "url": "https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Tumbleweed/"
                     },
                     {
-                        "name": "dev-py3",
-                        "url": "http://download.opensuse.org/repositories/devel:/languages:/python3/"
+                        "name": "shadowsocks",
+                        "url": "https://download.opensuse.org/repositories/home:/MargueriteSu/openSUSE_Tumbleweed/"
+                    },
+                    {
+                        "name": "repo-non-oss",
+                        "url": "http://download.opensuse.org/tumbleweed/repo/non-oss/"
+                    },
+                    {
+                        "name": "repo-oss",
+                        "url": "http://download.opensuse.org/tumbleweed/repo/oss/"
+                    },
+                    {
+                        "name":"repo-update",
+                        "url": "http://download.opensuse.org/update/tumbleweed/"
                     }
                 ]
-            }
+                }
         }
     },
     "bash": {

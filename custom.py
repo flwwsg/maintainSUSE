@@ -198,7 +198,7 @@ class CustomOS(object):
                 f.write('export %s\n' % export)
             for cmd in cmds:
                 f.write(cmd+'\n')
-        os.system('source ~/.bashrc')
+        os.system('source '+bashrc)
 
 
     def install_software(self):
@@ -276,7 +276,7 @@ class Opensuse(CustomOS):
     def add_repo(self):
         repos = self.configs[self.plantform]['os'][self.version]['repos']
         custom_repos = self.configs[self.plantform]['custom_repos']
-        addrepo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
+        addrepo = 'sudo zypper --non-interactive --no-gpg-checks --gpg-auto-import-keys addrepo --check --refresh --name "%s" %s "%s"'
         for repo in repos:
             os.system(addrepo % (repo['name'], repo['url'], repo['name']))
         for crepo in custom_repos:
