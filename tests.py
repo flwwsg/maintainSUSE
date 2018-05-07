@@ -91,3 +91,5 @@ class TestInitialzeOpensuse(unittest.TestCase):
 # eg: I want to test "supported system and change repositories", so I enter "1,2"'
 # 		)
 # 	testset = input(':')
+
+# Failed to restart NetworkManager.service: Unit NetworkManager.service not found
