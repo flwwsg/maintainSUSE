@@ -112,7 +112,8 @@ class CustomOS(object):
         '''
         get variable
         '''
-        self.pipindex = self.configs['common']['pypi'][0]
+        index = 0 if self.mirror_name == "tuna" else 1
+        self.pipindex = self.configs['common']['pypi'][index]
         self.username, self.userhome = self.get_user_info()
 
     def get_cmd_var(self, cmd):
