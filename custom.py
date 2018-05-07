@@ -19,35 +19,6 @@ VAR_MAPPING = {
     'USERNAME': 'get_var_username',
 }
 
-# def add_repos(repos='', plantform='opensuse', version='42.2'):
-#     if config[plantform]['version'] != version:
-#         return False
-#     if not repos:
-#         repos = config[plantform]['addrepos'].split(',')[:-1]
-#     for repo in repos:
-#         os.system('sudo zypper ar -fc %s' % repo.strip())
-#     repos = config['common']['cusrepos'].split(',')[:-1]
-#     for repo in repos:
-#         # print(repo.lstrip())
-#         os.system(repo.lstrip())
-#     os.system('sudo zypper  --gpg-auto-import-keys ref')
-#     return True
-
-
-# def _get_plantform(self):
-#     with open('/etc/os-release') as f:
-#         infos = f.readlines()
-#     for line in infos:
-#         tmp = line.strip().split('=')
-#         name = tmp[0]
-#         if name == 'ID':
-#             self.plantform = tmp[1].replace('"','').lower()
-#         if name == 'VERSION':
-#             self.version = tmp[1].replace('"', '').lower()
-#     if not self.plantform or not self.version:
-#         raise Exception('Unknown os.')
-
-
 class CustomOS(object):
     """change repository to chinese mirror"""
 
