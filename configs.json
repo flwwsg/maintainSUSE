@@ -1,175 +1,150 @@
 {
-    "common": {
-        "pypi": [
-            "https://pypi.tuna.tsinghua.edu.cn/simple",
-            "https://mirrors.ustc.edu.cn/pypi/web/simple"
-        ],
-        "tuna": "https://mirrors.tuna.tsinghua.edu.cn/",
-        "ustc": "https://mirrors.ustc.edu.cn/",
-        "pip_software": "requirements.txt",
-        "host": "https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts-files/hosts",
-        "cmd": [
-            "sudo usermod -aG vboxusers {USERNAME}"
-        ],
-        "env_var": [
-            "PIPINDEX",
-            "USERNAME"
-        ]            
-    },
-    "opensuse": {
-        "software": [
-            "-t pattern devel_basis",
-            "chromiume",
-            "git",
-            "fcitx-table-cn-wubi-pinyin",
-            "ctags",
-            "virtualbox",
-            "htop",
-            "redshift",
-            "redshift-gtk",
-            "code",
-            "sublime-text",
-            "chromedriver",
-            "shadowsocks-qt5",
-            "ffmpeg",
-            "lame",
-            "imagewriter",
-            "gstreamer-plugins-libav",
-            "gstreamer-plugins-bad",
-            "gstreamer-plugins-ugly",
-            "gstreamer-plugins-ugly-orig-addon"
-        ],
-        "custom_repos": [
-            "sudo rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg",
-            "sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc",
-            "sudo zypper addrepo -g -f https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo",
-            "sudo sh -c 'echo -e \"[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ntype=rpm-md\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\" > /etc/zypp/repos.d/vscode.repo'"
-        ],
-        "os": {
-            "42.3": {
-                "repos": [
-                    {
-                        "name": "packman",
-                        "url": "https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Leap_42.3/"
-                    },
-                    {
-                        "name": "dev-py3",
-                        "url": "http://download.opensuse.org/repositories/devel:/languages:/python3/"
-                    },
-                    {
-                        "name": "shadowsocks",
-                        "url": "http://download.opensuse.org/repositories/home:/gmg137/openSUSE_Leap_42.3/"
-                    },
-                    {
-                        "name": "repo-non-oss",
-                        "url": "https://mirrors.tuna.tsinghua.edu.cn/opensuse/distribution/leap/42.3/repo/non-oss/"
-                    },
-                    {
-                        "name": "repo-oss",
-                        "url": "https://mirrors.tuna.tsinghua.edu.cn/opensuse/distribution/leap/42.3/repo/oss/"
-                    },
-                    {
-                        "name":"repo-update",
-                        "url": "http://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/42.3/oss/"
-                    },
-                    {
-                        "name": "repo-update-non-oss",
-                        "url": "http://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/42.3/non-oss/"
-                    }
-                 ]
-            },
-            "tumbleweed": {
-                "repos": [
-                    {
-                        "name": "tuna-packman",
-                        "url": "https://mirrors.tuna.tsinghua.edu.cn/packman/suse/openSUSE_Tumbleweed/"
-                    },
-                    {
-                        "name": "shadowsocks",
-                        "url": "https://download.opensuse.org/repositories/home:/MargueriteSu/openSUSE_Tumbleweed/"
-                    },
-                    {
-                        "name": "repo-non-oss",
-                        "url": "http://download.opensuse.org/tumbleweed/repo/non-oss/"
-                    },
-                    {
-                        "name": "repo-oss",
-                        "url": "http://download.opensuse.org/tumbleweed/repo/oss/"
-                    },
-                    {
-                        "name":"repo-update",
-                        "url": "http://download.opensuse.org/update/tumbleweed/"
-                    }
-                ]
-                }
-        }
-    },
-    "bash": {
-        "alias": {
-            "grep": "grep -E --color=auto ",
-            "sudo": "sudo ",
-            "pipinstall": "pip install -i {PIPINDEX} ",
-            "gobuild":"go build ",
-            "gorun": "go run "
-        },
-        "export":{},
-        "cmd": [
-            "PATH=~/.local/bin:$PATH\nexport VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3\nsource virtualenvwrapper.sh"
-        ]
-    },
-    "ubuntu": {
-        "software": [
-            "build-essential",
-            "python3-pip",
-            "python-pip",
-            "chromium-browser",
-            "git",
-            "ctags",
-            "htop",
-            "redshift",
-            "redshift-gtk",
-            "code",
-            "virtualbox",
-            "sublime-text",
-            "golang"
-        ],
-        "os": {
-            "16.04": {
-                "ustc": "https://mirrors.ustc.edu.cn/ubuntu/",
-                "tuna": "https://mirrors.tuna.tsinghua.edu.cn/ubuntu/",
-                "custom_repos": [
-                    "wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -",
-                    "echo \"deb https://download.sublimetext.com/ apt/stable/\" | sudo tee /etc/apt/sources.list.d/sublime-text.list",
-                    "curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg",
-                    "sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg",
-                    "sudo sh -c 'echo \"deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main\" > /etc/apt/sources.list.d/vscode.list'"
-                ],
-                "repos":[
-                    "xenial main restricted", 
-                    "xenial-updates main restricted", 
-                    "xenial-backports main restricted universe multiverse", 
-                    "xenial universe",
-                    "xenial-security main restricted"
-                ]
-            },
-            "18.04": {
-                "ustc": "https://mirrors.ustc.edu.cn/ubuntu/",
-                "tuna": "https://mirrors.tuna.tsinghua.edu.cn/ubuntu/",
-                "custom_repos": [
-                    "wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -",
-                    "echo \"deb https://download.sublimetext.com/ apt/stable/\" | sudo tee /etc/apt/sources.list.d/sublime-text.list",
-                    "curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg",
-                    "sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg",
-                    "sudo sh -c 'echo \"deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main\" > /etc/apt/sources.list.d/vscode.list'",
-                ],
-                "repos":[
-                    "bionic main restricted", 
-                    "bionic-updates main restricted", 
-                    "bionic-backports main restricted universe multiverse", 
-                    "bionic universe",
-                    "bionic-security main restricted"
-                ]
-            }
-        }
-    }
+  "common": {
+    "tuna": "https://mirrors.tuna.tsinghua.edu.cn/",
+    "ustc": "https://mirrors.ustc.edu.cn/",
+    "tuna_pypi":  "https://pypi.tuna.tsinghua.edu.cn/simple",
+    "ustc_pypi": "https://mirrors.ustc.edu.cn/pypi/web/simple",
+    "pip_software": "requirements.txt",
+    "host": "https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts-files/hosts",
+    "su_cmd": [
+      "sudo usermod -aG vboxusers {USER_NAME}"
+    ],
+    "normal_cmd":[
+      "git config --global user.email '2319406132@qq.com'",
+      "git config --global user.name 'lblue'"
+    ]
+  },
+  "opensuse": {
+      "software": {
+          "dev":[
+              "-t pattern devel_basis",
+              "git",
+              "ctags",
+              "htop"
+          ],
+          "laptop":[
+              "chromium",
+              "fcitx-table-cn-wubi-pinyin",
+              "virtualbox",
+              "redshift",
+              "redshift-gtk",
+              "code",
+              "shadowsocks-qt5",
+              "chromedriver",
+              "ffmpeg",
+              "lame",
+              "go",
+              "imagewriter",
+              "gstreamer-plugins-libav",
+              "gstreamer-plugins-bad",
+              "gstreamer-plugins-ugly",
+              "gstreamer-plugins-ugly-orig-addon"
+          ]
+      },
+      "custom_repos": [
+          "sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc",
+          "sudo sh -c 'echo -e \"[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ntype=rpm-md\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\" > /etc/zypp/repos.d/vscode.repo'"
+      ],
+      "repos":[
+          {
+              "name": "packman",
+              "url": "https://{MIRROR_NAME}/packman/suse/{FULL_SUSE_VERSION}/"
+          },
+          {
+              "name": "shadowsocks",
+              "url": "http://download.opensuse.org/repositories/home:/gmg137/{FULL_SUSE_VERSION}/"
+          },
+          {
+              "name": "repo-non-oss",
+              "url": "https://{MIRROR_NAME}/opensuse/distribution/leap/{SUSE_VERSION}/repo/non-oss/"
+          },
+          {
+              "name": "repo-oss",
+              "url": "https://{MIRROR_NAME}/opensuse/distribution/leap/{SUSE_VERSION}/repo/oss/"
+          },
+          {
+              "name":"repo-update",
+              "url": "http://{MIRROR_NAME}/opensuse/update/leap/{SUSE_VERSION}/oss/"
+          },
+          {
+              "name": "repo-update-non-oss",
+              "url": "http://{MIRROR_NAME}/opensuse/update/leap/{SUSE_VERSION}/non-oss/"
+          },
+          {
+              "name": "dev-py3",
+              "url": "http://download.opensuse.org/repositories/devel:/languages:/python3/"
+          }
+      ]
+  },
+  "bash": {
+      "alias": {
+          "grep": "grep -E --color=auto ",
+          "sudo": "sudo ",
+          "pipinstall": "pip install -i {PIP_INDEX} ",
+          "gobuild":"go build ",
+          "gorun": "go run "
+      },
+      "cmd": [
+        "export PATH=~/.local/bin:$PATH",
+        "export GOPATH=~/dev",
+        "export PATH=$GOPATH/bin:$PATH",
+        "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3",
+        "source virtualenvwrapper.sh"
+      ]
+  },
+  "ubuntu": {
+      "software": [
+          "build-essential",
+          "python3-pip",
+          "python-pip",
+          "chromium-browser",
+          "git",
+          "ctags",
+          "htop",
+          "redshift",
+          "redshift-gtk",
+          "code",
+          "virtualbox",
+          "sublime-text",
+          "golang"
+      ],
+      "os": {
+          "16.04": {
+              "ustc": "https://mirrors.ustc.edu.cn/ubuntu/",
+              "tuna": "https://mirrors.tuna.tsinghua.edu.cn/ubuntu/",
+              "custom_repos": [
+                  "wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -",
+                  "echo \"deb https://download.sublimetext.com/ apt/stable/\" | sudo tee /etc/apt/sources.list.d/sublime-text.list",
+                  "curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg",
+                  "sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg",
+                  "sudo sh -c 'echo \"deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main\" > /etc/apt/sources.list.d/vscode.list'"
+              ],
+              "repos":[
+                  "xenial main restricted",
+                  "xenial-updates main restricted",
+                  "xenial-backports main restricted universe multiverse",
+                  "xenial universe",
+                  "xenial-security main restricted"
+              ]
+          },
+          "18.04": {
+              "ustc": "https://mirrors.ustc.edu.cn/ubuntu/",
+              "tuna": "https://mirrors.tuna.tsinghua.edu.cn/ubuntu/",
+              "custom_repos": [
+                  "wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -",
+                  "echo \"deb https://download.sublimetext.com/ apt/stable/\" | sudo tee /etc/apt/sources.list.d/sublime-text.list",
+                  "curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg",
+                  "sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg",
+                  "sudo sh -c 'echo \"deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main\" > /etc/apt/sources.list.d/vscode.list'"
+              ],
+              "repos":[
+                  "bionic main restricted",
+                  "bionic-updates main restricted",
+                  "bionic-backports main restricted universe multiverse",
+                  "bionic universe",
+                  "bionic-security main restricted"
+              ]
+          }
+      }
+  }
 }
