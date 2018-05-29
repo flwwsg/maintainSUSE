@@ -17,10 +17,12 @@
   "opensuse": {
       "software": {
           "dev":[
-              "-t pattern devel_basis",
-              "git",
-              "ctags",
-              "htop"
+            "-t pattern devel_basis",
+            "git",
+            "ctags",
+            "htop",
+            "p7zip",
+            "unrar"
           ],
           "laptop":[
               "chromium",
@@ -48,7 +50,7 @@
       "repos":[
           {
               "name": "packman",
-              "url": "https://{MIRROR_NAME}/packman/suse/{FULL_SUSE_VERSION}/"
+              "url": "{MIRROR_URL}/packman/suse/{FULL_SUSE_VERSION}/"
           },
           {
               "name": "shadowsocks",
@@ -56,19 +58,19 @@
           },
           {
               "name": "repo-non-oss",
-              "url": "https://{MIRROR_NAME}/opensuse/distribution/leap/{SUSE_VERSION}/repo/non-oss/"
+              "url": "{MIRROR_URL}/opensuse/distribution/leap/{SUSE_VERSION}/repo/non-oss/"
           },
           {
               "name": "repo-oss",
-              "url": "https://{MIRROR_NAME}/opensuse/distribution/leap/{SUSE_VERSION}/repo/oss/"
+              "url": "{MIRROR_URL}/opensuse/distribution/leap/{SUSE_VERSION}/repo/oss/"
           },
           {
               "name":"repo-update",
-              "url": "http://{MIRROR_NAME}/opensuse/update/leap/{SUSE_VERSION}/oss/"
+              "url": "{MIRROR_URL}/opensuse/update/leap/{SUSE_VERSION}/oss/"
           },
           {
               "name": "repo-update-non-oss",
-              "url": "http://{MIRROR_NAME}/opensuse/update/leap/{SUSE_VERSION}/non-oss/"
+              "url": "{MIRROR_URL}/opensuse/update/leap/{SUSE_VERSION}/non-oss/"
           },
           {
               "name": "dev-py3",

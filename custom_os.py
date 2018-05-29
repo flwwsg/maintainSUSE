@@ -17,7 +17,7 @@ VAR_MAPPING = {
     "USER_NAME": '',
     "SUSE_VERSION": '',
     "FULL_SUSE_VERSION": '',
-    "MIRROR_NAME": '',
+    "MIRROR_URL": '',
 }
 
 
@@ -104,7 +104,7 @@ class CustomOS(object):
         VAR_MAPPING["USER_NAME"] = user_name
         VAR_MAPPING["SUSE_VERSION"] = self.version
         VAR_MAPPING["FULL_SUSE_VERSION"] = 'openSUSE_Leap_%s' % self.version
-        VAR_MAPPING["MIRROR_NAME"] = self.mirror_name
+        VAR_MAPPING["MIRROR_URL"] = self.configs["common"][self.mirror_name]
 
     @staticmethod
     def chk_url(url, time_out=30):
@@ -143,12 +143,13 @@ class CustomOS(object):
             h.write(html.read())
         # copy hosts
         os.system('sudo cat ./hosts >> /etc/hosts')
+        self.restart_network()
 
-    def execute_cmd(self, cmd_type="normal"):
-        if cmd_type == "normal":
-            c = self.configs['common']['normal_cmd']
-        else:
+    def execute_cmd(self):
+        if os.getuid() == 0:
             c = self.configs['common']['su_cmd']
+        else:
+            c = self.configs['common']['normal_cmd']
         for cmd in c:
             os.system(self.gen_cmd(cmd))
 
@@ -175,6 +176,7 @@ class CustomOS(object):
         pip_index = VAR_MAPPING['PIP_INDEX']
         req_file = self.configs['common']['pip_software']
         os.system('sudo pip3 install -r %s -i %s' % (req_file, pip_index))
+
 
 class Ubuntu(CustomOS):
     '''
@@ -220,6 +222,7 @@ class Opensuse(CustomOS):
     """
     def __init__(self, version, mirror_name, file_name='configs.json'):
         CustomOS.__init__(self, 'opensuse', version, mirror_name, file_name)
+        self.check_requirement()
 
     def check_requirement(self):
         # check url in opensuse repo
@@ -237,49 +240,53 @@ class Opensuse(CustomOS):
     def add_repo(self):
         repos = self.configs[self.platform]['repos']
         custom_repos = self.configs[self.platform]['custom_repos']
-        add_repo = 'sudo zypper addrepo --check --refresh --name "%s" %s "%s"'
+        add_repo = 'sudo zypper --gpg-auto-import-keys addrepo --check --refresh --name "%s" %s "%s"'
         for repo in repos:
             url = self.gen_cmd(repo["url"])
             os.system(add_repo % (repo['name'], url, repo['name']))
         for repo in custom_repos:
             os.system(repo)
 
-    def install_software(self):
+    def install_software(self, mode='laptop'):
         """
         install software
+        :param mode:
         :return:
         """
         software = self.configs[self.platform]['software']
-        for soft in software:
-            os.system('sudo zypper in -y %s' % soft.strip())
+        for soft in software["dev"]:
+            os.system('sudo zypper --gpg-auto-import-keys in -y %s' % soft.strip())
+        if mode == 'server':
+            return
+        for soft in software["laptop"]:
+            os.system('sudo zypper --gpg-auto-import-keys in -y %s' % soft.strip())
 
     def restart_network(self):
         os.system('sudo systemctl restart NetworkManager')
         time.sleep(10)
 
-# #configure git
-# os.system('git config --global user.email "2319406132@qq.com"')
-# os.system("git config --global user.name 'flwwsg'")
-
 
 if __name__ == '__main__':
     with open('/etc/os-release') as f:
-        infos = f.readlines()
-    plantform = ''
-    for line in infos:
+        lines = f.readlines()
+    platform = ''
+    for line in lines:
         tmp = line.strip().split('=')
         name = tmp[0]
-        if name == 'ID':
-            plantform = tmp[1].replace('"', '').lower()
+        if name == "NAME":
+            s = tmp[1].replace('"', '').lower()
+            platform, _ = s.split()
             break
 
-    if plantform not in ['ubuntu', 'opensuse']:
-        raise Exception('Unknown os %s' % plantform)
+    if platform not in ['ubuntu', 'opensuse']:
+        raise Exception('Unknown os %s' % platform)
 
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', help='mirror name, default is tuna mirror')
     parser.add_argument('-v', help='os version, like 16.04 for ubuntu, tumbleweed for opensuse')
+    parser.add_argument('-s', action="store_false", default=False,
+                        help="running script under server mode or not, default is not ")
     args, unknown = parser.parse_known_args()
     m = args.m or 'tuna'
     if m not in ['tuna', 'ustc']:
@@ -287,23 +294,30 @@ if __name__ == '__main__':
     if not args.v:
         print(parser.print_help())
         sys.exit(1)
+    if args.s:
+        mode = "laptop"
+        print("under laptop mode")
+    else:
+        mode = "server"
+        print("under server mode")
     print('checking config.json')
-    if plantform == 'ubuntu':
-        cos = Ubuntu(args.v, m)
-    elif plantform == 'opensuse':
-        cos = Opensuse(args.v, m)
+    if platform != 'opensuse':
+        raise NotImplementedError("%s does not supported yet" % platform)
+    myOS = Opensuse(args.v, m)
     print('clearing repository')
-    cos.clear_repos()
-    print('geting host file')
-    cos.get_hosts()
+    myOS.clear_repos()
+    print('getting host file')
+    myOS.get_hosts()
     print('adding repository')
-    cos.add_repo()
+    myOS.add_repo()
     print('installing software')
-    cos.install_software()
+    myOS.install_software(mode)
     print('installing pip module')
-    cos.install_py_module()
-    # print('writing bashrc')
-    # cos.write_bashrc()
-    # print('excuting cmd')
-    # cos.excute_cmd()
-    
+    myOS.install_py_module()
+    print('writing file bashrc')
+    myOS.write_bash()
+    print('executing sudo cmd')
+    myOS.execute_cmd()
+    print("executing normal cmd")
+    os.setuid(1000)
+    myOS.execute_cmd()
