@@ -33,14 +33,8 @@
               "code",
               "shadowsocks-qt5",
               "chromedriver",
-              "ffmpeg",
-              "lame",
               "go",
-              "imagewriter",
-              "gstreamer-plugins-libav",
-              "gstreamer-plugins-bad",
-              "gstreamer-plugins-ugly",
-              "gstreamer-plugins-ugly-orig-addon"
+              "imagewriter"
           ]
       },
       "custom_repos": [
