@@ -294,7 +294,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', help='mirror name, default is tuna mirror')
     parser.add_argument('-v', help='os version, like 16.04 for ubuntu, tumbleweed for opensuse')
-    parser.add_argument('-s', action="store_false", default=False,
+    parser.add_argument('-s', action="store_true", default=False,
                         help="running script under server mode or not, default is not ")
     args, unknown = parser.parse_known_args()
     m = args.m or 'tuna'
@@ -304,11 +304,11 @@ if __name__ == '__main__':
         print(parser.print_help())
         sys.exit(1)
     if args.s:
-        mode = "laptop"
-        print("under laptop mode")
-    else:
         mode = "server"
         print("under server mode")
+    else:
+        mode = "laptop"
+        print("under laptop mode")
     print('checking config.json')
     if platform != 'opensuse':
         myOS = Ubuntu(args.v, m)
