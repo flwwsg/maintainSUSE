@@ -19,6 +19,7 @@ VAR_MAPPING = {
     "SUSE_VERSION": '',
     "FULL_SUSE_VERSION": '',
     "MIRROR_URL": '',
+    "UBUNTU_NAME": '',
 }
 
 
@@ -178,20 +179,18 @@ class CustomOS(object):
 
 
 class Ubuntu(CustomOS):
-    '''
-    initializing ubuntn os
-    '''
+    """
+    initializing ubuntu os
+    """
     def __init__(self, version, mirror_name, file_name='configs.json'):
         CustomOS.__init__(self, 'ubuntu', version, mirror_name, file_name)
+        self.check_requirement()
 
-    # def _chk_config(self):
-    #     CustomOS._chk_config(self)
-    #     to_be_check = self.configs[self.platform]['os'][self.version]
-    #     if self.mirror_name not in to_be_check or not to_be_check[self.mirror_name]:
-    #         raise Exception('Repository url is required for %s of %s' % (self.version, self.platform))
-    #     self.chk_url(to_be_check[self.mirror_name])
-    #     if not 'repos' in to_be_check or not to_be_check['repos']:
-    #         raise Exception('Need source name in %s of %s\'s repos' % (self.version, self.platform))
+    def check_requirement(self):
+        self.chk_url(VAR_MAPPING["MIRROR_URL"])
+        if 'repos' not in self.configs["ubuntu"]:
+            raise Exception('Need source name in %s of %s\'s repos' % (self.version, self.platform))
+        self.chk_permission()
 
     def clear_repos(self):
         source_path = '/etc/apt/sources.list'
@@ -200,19 +199,27 @@ class Ubuntu(CustomOS):
     def add_repo(self):
         source_path = '/etc/apt/sources.list'
         sources = []
-        url = self.configs[self.platform]['os'][self.version][self.mirror_name]
-        for repo in self.configs[self.platform]['os'][self.version]['repos']:
-            sources.append('deb %s %s' % (url, repo))
-        with open(source_path, 'w') as f:
-            f.write('\n'.join(sources))
-        for repo in self.configs[self.platform]['os'][self.version]['custom_repos']:
+        url = VAR_MAPPING["MIRROR_URL"]+"/ubuntu/"
+        for repo in self.configs[self.platform]['repos']:
+            sources.append('deb %s %s' % (url, self.gen_cmd(repo)))
+        with open(source_path, 'w') as sp:
+            sp.write('\n'.join(sources))
+        for repo in self.configs[self.platform]['custom_repos']:
             os.system(repo)
         os.system('sudo apt-get update')
 
-    def install_software(self):
+    def install_software(self, mode='laptop'):
         software = self.configs[self.platform]['software']
-        for soft in software:
+        for soft in software["dev"]:
             os.system('sudo apt-get -y install %s' % soft)
+        if mode == 'server':
+            return
+        for soft in software["laptop"]:
+            os.system('sudo apt-get -y install %s' % soft)
+
+    def restart_network(self):
+        os.system('sudo systemctl restart NetworkManager')
+        time.sleep(10)
 
 
 class Opensuse(CustomOS):
@@ -274,8 +281,11 @@ if __name__ == '__main__':
         name = tmp[0]
         if name == "NAME":
             s = tmp[1].replace('"', '').lower()
-            platform, _ = s.split()
-            break
+            platform = s.split()[0]
+            continue
+        if name == "UBUNTU_CODENAME":
+            VAR_MAPPING["UBUNTU_NAME"] = tmp[1]
+            continue
 
     if platform not in ['ubuntu', 'opensuse']:
         raise Exception('Unknown os %s' % platform)
@@ -301,8 +311,9 @@ if __name__ == '__main__':
         print("under server mode")
     print('checking config.json')
     if platform != 'opensuse':
-        raise NotImplementedError("%s does not supported yet" % platform)
-    myOS = Opensuse(args.v, m)
+        myOS = Ubuntu(args.v, m)
+    else:
+        myOS = Opensuse(args.v, m)
     print('clearing repository')
     myOS.clear_repos()
     print('getting host file')
