@@ -146,7 +146,7 @@ class CustomOS(object):
         self.restart_network()
 
     def execute_cmd(self):
-        if os.getuid() == 0:
+        if os.geteuid() == 0:
             c = self.configs['common']['su_cmd']
         else:
             c = self.configs['common']['normal_cmd']
@@ -319,5 +319,5 @@ if __name__ == '__main__':
     print('executing sudo cmd')
     myOS.execute_cmd()
     print("executing normal cmd")
-    os.setuid(1000)
+    os.seteuid(1000)
     myOS.execute_cmd()
