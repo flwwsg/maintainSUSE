@@ -15,6 +15,7 @@ from socket import timeout
 VAR_MAPPING = {
     "PIP_INDEX": '',
     "USER_NAME": '',
+    "USER_HOME": '',
     "SUSE_VERSION": '',
     "FULL_SUSE_VERSION": '',
     "MIRROR_URL": '',
@@ -32,7 +33,6 @@ class CustomOS(object):
         self.platform = platform
         self.version = version
         self.configs = {}
-        self.user_home = ""
         self.get_config()
         self.get_var()
         self.check_config()
@@ -100,8 +100,8 @@ class CustomOS(object):
         index_name = self.mirror_name + "_pypi"
         VAR_MAPPING["PIP_INDEX"] = self.configs["common"][index_name]
         user_name, user_home = self.get_user_info()
-        self.user_home = user_home
         VAR_MAPPING["USER_NAME"] = user_name
+        VAR_MAPPING["USER_HOME"] = user_home
         VAR_MAPPING["SUSE_VERSION"] = self.version
         VAR_MAPPING["FULL_SUSE_VERSION"] = 'openSUSE_Leap_%s' % self.version
         VAR_MAPPING["MIRROR_URL"] = self.configs["common"][self.mirror_name]
@@ -158,7 +158,7 @@ class CustomOS(object):
         write bash
         :return:
         """
-        bash_path = os.path.join(self.user_home, '.bashrc')
+        bash_path = os.path.join(VAR_MAPPING["USER_HOME"], '.bashrc')
         alias = self.configs['bash']['alias']
         cmd = self.configs['bash']['cmd']
         with open(bash_path, 'a') as bash:
@@ -166,7 +166,6 @@ class CustomOS(object):
                 c = "alias %s='%s'\n" % (alia, alias[alia])
                 bash.write(self.gen_cmd(c))
             bash.write("\n".join(cmd))
-        os.system('source '+bash_path)
 
     def install_py_module(self):
         """
