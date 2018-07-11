@@ -1,7 +1,7 @@
 {
   "common": {
-    "tuna": "https://mirrors.tuna.tsinghua.edu.cn/",
-    "ustc": "https://mirrors.ustc.edu.cn/",
+    "tuna": "https://mirrors.tuna.tsinghua.edu.cn",
+    "ustc": "https://mirrors.ustc.edu.cn",
     "tuna_pypi":  "https://pypi.tuna.tsinghua.edu.cn/simple",
     "ustc_pypi": "https://mirrors.ustc.edu.cn/pypi/web/simple",
     "pip_software": "requirements.txt",
