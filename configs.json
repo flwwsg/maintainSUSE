@@ -22,7 +22,8 @@
             "ctags",
             "htop",
             "p7zip",
-            "unrar"
+            "unrar",
+            "python3-devel"
           ],
           "laptop":[
               "chromium",
