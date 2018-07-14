@@ -292,14 +292,14 @@ if __name__ == '__main__':
 
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', help='mirror name, default is tuna mirror')
+    # parser.add_argument('-m', help='mirror name, default is ustc mirror')
     parser.add_argument('-v', help='os version, like 16.04 for ubuntu, tumbleweed for opensuse')
     parser.add_argument('-s', action="store_true", default=False,
                         help="running script under server mode or not, default is not ")
     args, unknown = parser.parse_known_args()
-    m = args.m or 'tuna'
-    if m not in ['tuna', 'ustc']:
-        raise Exception('Please add mirror name %s in config.json')
+    # m = args.m or 'ustc'
+    # if m not in ['tuna', 'ustc']:
+    #     raise Exception('Please add mirror name %s in config.json')
     if not args.v:
         print(parser.print_help())
         sys.exit(1)
@@ -311,9 +311,9 @@ if __name__ == '__main__':
         print("under laptop mode")
     print('checking config.json')
     if platform != 'opensuse':
-        myOS = Ubuntu(args.v, m)
+        myOS = Ubuntu(args.v, "ustc")
     else:
-        myOS = Opensuse(args.v, m)
+        myOS = Opensuse(args.v, "ustc")
     print('clearing repository')
     myOS.clear_repos()
     print('getting host file')
