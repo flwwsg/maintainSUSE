@@ -24,7 +24,8 @@
         "p7zip",
         "unrar",
         "python3-devel",
-        "npm"
+        "npm",
+        "go"
       ],
       "laptop": [
         "chromium",
@@ -35,7 +36,6 @@
         "code",
         "shadowsocks-qt5",
         "chromedriver",
-        "go",
         "imagewriter"
       ]
     },
@@ -69,8 +69,8 @@
         "url": "{MIRROR_URL}/opensuse/update/leap/{SUSE_VERSION}/non-oss/"
       },
       {
-        "name": "dev-py3",
-        "url": "http://download.opensuse.org/repositories/devel:/languages:/python3/"
+        "name": "dev-py",
+        "url": "http://download.opensuse.org/repositories/devel:/languages:/python/{FULL_SUSE_VERSION}"
       }
     ]
   },
